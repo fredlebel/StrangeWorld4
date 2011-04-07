@@ -97,8 +97,9 @@ void StrangeWindowsView::drawCarnivore(
 
     if ( selected )
     {
-        SelectObject( dc_, YellowPen );
+        HPEN tmp = (HPEN)SelectObject( dc_, YellowPen );
         Ellipse( dc_, x - r-8, y - r-8, x + r+8, y + r+8 );
+        SelectObject( dc_, tmp );
     }
 
     SelectObject(dc_, prevBrush);
@@ -124,8 +125,9 @@ void StrangeWindowsView::drawHerbivore(
 
     if ( selected )
     {
-        SelectObject( dc_, YellowPen );
+        HPEN tmp = (HPEN)SelectObject( dc_, YellowPen );
         Ellipse( dc_, x - r-8, y - r-8, x + r+8, y + r+8 );
+        SelectObject( dc_, tmp );
     }
 
     SelectObject(dc_, prevBrush);
@@ -144,8 +146,9 @@ void StrangeWindowsView::drawGrass( int x, int y, int r, int health, bool select
 
     if ( selected )
     {
-        SelectObject( dc_, YellowPen );
+        HPEN tmp = (HPEN)SelectObject( dc_, YellowPen );
         Ellipse( dc_, x - r*2, y - r*2, x + r*2, y + r*2 );
+        SelectObject( dc_, tmp );
     }
 
     SelectObject(dc_, prevBrush);

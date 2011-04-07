@@ -34,9 +34,6 @@ public:
         NNI_FB_EYE_RADIUS,  // Neural feedback - Radius of vision
         NNI_FB_FOCUS,       // Neural feedback - Angle between the eyes
         NNI_FB_BODY_RADIUS, // Neural feedback - Action
-
-        // Number of input neurons.
-        NNI_Count,
     };
 
     // Neural network output addresses
@@ -47,8 +44,6 @@ public:
         NNO_EYE_RADIUS,     // Radius of vision ( 150-0 )
         NNO_FOCUS,          // Angle between the eyes ( 180-0 )
         NNO_BODY_RADIUS,    // Radius of vision ( 150-0 )
-        // Number of output neurons.
-        NNO_Count,
     };
 
     // Displacement and angle resolution
@@ -56,7 +51,7 @@ public:
     enum { ROTATION_STEP_LEVEL      = 100 };
     enum { EYE_RADIUS_STEP_LEVEL    =  50 };
     enum { EYEANGLE_STEP_LEVEL      =  50 };
-    enum { BODY_RADIUS_STEP_LEVEL   = 500 };
+    enum { BODY_RADIUS_STEP_LEVEL   = 200 };
 
     // Counts the number of times the creature has spawned.
     int spawnCount_;

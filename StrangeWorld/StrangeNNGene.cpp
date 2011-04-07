@@ -6,10 +6,10 @@
 
 #include "StrangeNNGene.h"
 #include "StrangeNeuralNetwork.h"
-#include "StrangeLivingCreature.h"
 #include "FastRand.h"
 
 static unsigned int globalMutationLevel = 1;
+
 
 StrangeNNGene::StrangeNNGene( StrangeNNGene* gene )
 {
@@ -22,37 +22,23 @@ StrangeNNGene::StrangeNNGene( std::wstring const& filename )
     if ( ! loadFromFile( filename ) )
     {
         // Create a basic initial network.
-        int n, i;
-        // Neurons that connect to all inputs
+
         std::ostringstream geneStr;
-        int hiddenLayerSize = 6; // TODO: Make configurable
+        // Neurons that connect to all inputs
+        geneStr << "@!-1,500!-2,500!-3,500!-4,500!-5,500!-6,500!-7,500!-8,500!-9,500!-10,500!-11,500!-12,500!-13,500!-14,500!-15,500!-16,500!-17,500!-18,500!-19,500!-20,500!-21,500!-22,500";
+        geneStr << "@!-1,500!-2,500!-3,500!-4,500!-5,500!-6,500!-7,500!-8,500!-9,500!-10,500!-11,500!-12,500!-13,500!-14,500!-15,500!-16,500!-17,500!-18,500!-19,500!-20,500!-21,500!-22,500";
+        geneStr << "@!-1,500!-2,500!-3,500!-4,500!-5,500!-6,500!-7,500!-8,500!-9,500!-10,500!-11,500!-12,500!-13,500!-14,500!-15,500!-16,500!-17,500!-18,500!-19,500!-20,500!-21,500!-22,500";
+        geneStr << "@!-1,500!-2,500!-3,500!-4,500!-5,500!-6,500!-7,500!-8,500!-9,500!-10,500!-11,500!-12,500!-13,500!-14,500!-15,500!-16,500!-17,500!-18,500!-19,500!-20,500!-21,500!-22,500";
+        geneStr << "@!-1,500!-2,500!-3,500!-4,500!-5,500!-6,500!-7,500!-8,500!-9,500!-10,500!-11,500!-12,500!-13,500!-14,500!-15,500!-16,500!-17,500!-18,500!-19,500!-20,500!-21,500!-22,500";
+        geneStr << "@!-1,500!-2,500!-3,500!-4,500!-5,500!-6,500!-7,500!-8,500!-9,500!-10,500!-11,500!-12,500!-13,500!-14,500!-15,500!-16,500!-17,500!-18,500!-19,500!-20,500!-21,500!-22,500";
 
-        // Start with generation zero
-        geneStr << "0";
-
-        // The hidden layers
-        for ( n = 0; n < hiddenLayerSize; ++n )
-        {
-            // Start with a neuron token
-            geneStr << GENEFILE_TOKEN_NEURON;
-            // Connect the neuron to all inputs.
-            for ( i = 1; i <= StrangeLivingCreature::NNI_Count; ++i )
-            {
-                geneStr << GENEFILE_TOKEN_DENDRITE << (-i) << ",500";
-            }
-        }
-
-        // Output layer
-        for ( n = 0; n < StrangeLivingCreature::NNO_Count; ++n )
-        {
-            // Start with a neuron token
-            geneStr << GENEFILE_TOKEN_NEURON;
-            // Connect the neuron to all those neurons in the hidden layer.
-            for ( i = 0; i < hiddenLayerSize; ++i )
-            {
-                geneStr << GENEFILE_TOKEN_DENDRITE << i << ",500";
-            }
-        }
+        // Neurons that connect to those neurons
+        // The last neurons in the gene are the outputs
+        geneStr << "@!0,500!1,500!2,500!3,500!4,500!5,500";
+        geneStr << "@!0,500!1,500!2,500!3,500!4,500!5,500";
+        geneStr << "@!0,500!1,500!2,500!3,500!4,500!5,500";
+        geneStr << "@!0,500!1,500!2,500!3,500!4,500!5,500";
+        geneStr << "@!0,500!1,500!2,500!3,500!4,500!5,500";
 
         if ( ! createGeneData( geneStr.str() ) )
         {
@@ -128,6 +114,8 @@ void StrangeNNGene::mutate()
         }
     }
 
+#if !defined( USE_STATIC_NEURALNET )
+
     // Once in a while, remove/add a dendrite
     if ( ( randomMT() % MUTATION_BIAS_ADDREM ) < (globalMutationLevel-1) && !data_.empty() )
     {
@@ -137,8 +125,8 @@ void StrangeNNGene::mutate()
         {
             // Random neuron, don't forget to include the input neurons.
             int targetNeuronIndex =
-                (randomMT() % (data_.size() + StrangeLivingCreature::NNI_Count))
-                - StrangeLivingCreature::NNI_Count;
+                (randomMT() % (data_.size() + NEURAL_NET_INPUT_COUNT))
+                - NEURAL_NET_INPUT_COUNT;
             // A random value for this new dendrite.
             int value = ( randomMT() % ( StrangeNeuralNetwork::BiasMax * 2 ) ) -
                 StrangeNeuralNetwork::BiasMax;
@@ -169,8 +157,8 @@ void StrangeNNGene::mutate()
             neuron.erase( dendriteIt );
             // Random neuron, don't forget to include the input neurons.
             int targetNeuronIndex =
-                (randomMT() % (data_.size() + StrangeLivingCreature::NNI_Count))
-                - StrangeLivingCreature::NNI_Count;
+                (randomMT() % (data_.size() + NEURAL_NET_INPUT_COUNT))
+                - NEURAL_NET_INPUT_COUNT;
             // Insert the new dendrite
             neuron.insert( std::make_pair( targetNeuronIndex, value ) );
         }
@@ -187,7 +175,7 @@ void StrangeNNGene::mutate()
             if ( data_.empty() )
             {
                 // Connect it to all inputs
-                for ( int i = 1; i <= StrangeLivingCreature::NNI_Count; ++i )
+                for ( int i = 1; i <= NEURAL_NET_INPUT_COUNT; ++i )
                     neuron.insert( std::make_pair( -i, 500 ) );
                 data_.push_back( neuron );
             }
@@ -228,8 +216,8 @@ void StrangeNNGene::mutate()
                 // Don't forget to include the input neurons.
                 {
                     int targetNeuronIndex =
-                        (randomMT() % (data_.size() + StrangeLivingCreature::NNI_Count))
-                        - StrangeLivingCreature::NNI_Count;
+                        (randomMT() % (data_.size() + NEURAL_NET_INPUT_COUNT))
+                        - NEURAL_NET_INPUT_COUNT;
                     // A random value for this new dendrite.
                     int value = ( randomMT() % ( StrangeNeuralNetwork::BiasMax * 2 ) ) -
                         StrangeNeuralNetwork::BiasMax;
@@ -288,6 +276,7 @@ void StrangeNNGene::mutate()
             }
         }
     }
+#endif
 }
 
 void StrangeNNGene::merge( StrangeNNGene* )
@@ -419,6 +408,7 @@ bool StrangeNNGene::createNeuron( Neuron& neuron, std::string const& str )
     return true;
 }
 
+
 std::vector<std::string> StrangeNNGene::splitToken( std::string const& str, std::string const& token )
 {
     std::vector<std::string> values;
@@ -458,4 +448,30 @@ unsigned int StrangeNNGene::getGeneration()
 {
     return geneGeneration_;
 }
+
+
+/*
+@
+    !-1,590     // Input 1
+    !-2,-340    // Input 2
+    !0,600      // Loopback
+    !3,32       // Connect to 4th neuron
+@
+    !-2,-793    // Input 2
+    !0,600      // Connect to 1st neuron
+    !1,320      // Loopback
+
+
+*/
+
+
+
+
+
+
+
+
+
+
+
 

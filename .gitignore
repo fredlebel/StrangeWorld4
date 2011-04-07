@@ -1,0 +1,7 @@
+Debug
+StrangeWorld_Windows/Release
+*.ncb
+*.suo
+*.pdb
+*.user
+*.gen4

@@ -1,7 +1,6 @@
 #include "StrangeNeuralNetwork.h"
 #include "StrangeNNGene.h"
 #include "StrangeWorldSettings.h"
-#include "StrangeLivingCreature.h"
 
 // Function name   : StrangeNeuralNetwork::StrangeNeuralNetwork
 // Description     : 
@@ -47,6 +46,7 @@ void StrangeNeuralNetwork::reset()
     network_.reset();
 }
 
+
 // Function name   : StrangeNeuralNetwork::pop
 // Description     : 
 // Return type     : int 
@@ -78,7 +78,7 @@ void StrangeNeuralNetwork::buildFromGene( StrangeNNGene* gene )
     // Create the first layer, this is the input layer
     network_.addLayer();
     // Create a node for each input, this is the first layer
-    for ( unsigned int i = 0; i < StrangeLivingCreature::NNI_Count; ++i )
+    for ( unsigned int i = 0; i < NEURAL_NET_INPUT_COUNT; ++i )
     {
         NeuronType* n = network_.createNode( 0, 0 );
         // Push it to the current list

@@ -2,8 +2,8 @@
 #define _StrangeWindowsView_h_included_
 
 #include <Windows.h>
-#include <StrangeView.h>
-#include <StrangeWorld.h>
+#include "StrangeView.h"
+#include "StrangeWorld.h"
 
 //#define USE_GDIPLUS
 #if defined( USE_GDIPLUS )

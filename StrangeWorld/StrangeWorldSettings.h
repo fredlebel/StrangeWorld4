@@ -26,8 +26,10 @@
 #define HERBIVORE_SPAWN_THRES      800      // Required health to spawn
 #define HERBIVORE_SPAWN_AGE_THRES  750      // How old before breeding
 
-#define USE_FREE_NEURALNET      // Use non-layered free-growing neural net
 //#define USE_STATIC_NEURALNET    // Don't add/remove neurons
+
+#define NEURAL_NET_INPUT_COUNT      22
+#define NEURAL_NET_OUTPUT_COUNT      5
 
 #define MUTATION_BIAS_SOFT         10 // +/- changes to dendrite bias
 #define MUTATION_BIAS_INVERSE    1500 // A dendrite value is inversed

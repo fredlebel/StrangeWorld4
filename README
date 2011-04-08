@@ -1,0 +1,70 @@
+Evolution through natural selection of neural networks.
+Three types of creatures:
+1) Green plants grow randomly.
+2) Blue herbivores eat plants.
+3) Red carnivores eat herbivores.
+
+=== Controls ===
+<space>       Toggle between normal rendered speed and fast no-render speed.
+<right-click> Pause, move forward by one frame.
+<left-click>  Select/unselect an entity.
+<a>           Select all entities.
+<c>           Clear all selections.
+<s>           Toggle extra rendering of selected entities
+                  Render nothing extra.
+                  Render left/right vision circles.
+                  Render left/right RGB inputs and current health.
+<0-9>         Change the rate of mutation.  0 = no mutation, 9 = max mutation.  Mutations occur only upon reproduction.
+
+Every 10000 generations a GEN4 file is created for herbivores and carnivores to save the state of the neural network at that time.
+
+Minimizing the window hides it to the system tray.  Clicking on the tray icon brings it back.  Closing the window saves the latest genes to file and exits.
+
+The process runs at idle priority.
+
+=== Neural network details ===
+The herbivores and carnivores brains process the same inputs and outputs.
+
+IN: Left eye red color
+IN: Left eye green color
+IN: Left eye blue color
+IN: Right eye red color
+IN: Right eye green color
+IN: Right eye blue color
+IN: Current health
+IN: Current angle between eyes
+IN: Current radius of eyes
+IN: Feedback of last forward/backward displacement OUT 
+IN: Feedback of last rotation OUT
+IN: Feedback of last eye radius delta OUT
+IN: Feedback of last eye angle delta OUT
+IN: Feedback of last delta of body radius OUT
+
+OUT: Relative forward/backward movement
+OUT: Relative change in rotation
+OUT: Relative change in eye radius
+OUT: Relative change in eye angle
+OUT: Relative change in body radius
+
+=== Results ===
+
+~80000 generations I usually see the herbivores properly hunt for the plants.
+
+I've seen herbivores simulateously reduce the radius of their eyes and the angle between them to focus on a single plant as they approached it.  Presumable this was an improvement over earlier generations which would get confused between a close plant and two or more far ones.
+
+I've seen herbivores actively evade carnivores, stopping in mid movement and quickly backing up.
+
+I've seen carnivores actively target herbivores.
+
+I've seen herbivores reduce their size when evading a carnivore to reduce the chances of a collision and increase their size when going towards a plant.
+
+
+
+
+
+
+
+
+
+
+

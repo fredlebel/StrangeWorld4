@@ -18,7 +18,7 @@ public:
     static int ourAverageFeedCount;
     static int ourDeathCount;
     // Elite gene, usually the latest one
-    static StrangeNNGene* ourEliteGene;
+    static std::auto_ptr<StrangeNNGene> ourEliteGene;
     
     StrangeCarnivore(StrangeNNGene* aGene);
     virtual ~StrangeCarnivore();

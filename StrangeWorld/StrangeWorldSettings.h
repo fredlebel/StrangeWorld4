@@ -44,8 +44,8 @@
 #define GENEFILE_TOKEN_DENDRITE  "!"
 #define GENEFILE_TOKEN_COMMA     ","
 
-// Only one of ELITE_xxx can be selected
-//#define ELITE_IS_OLDEST
-//#define ELITE_IS_PROLIFIC
+// Used only when repopulating due to extinctions.
+#define ELITE_IS_OLDEST
+#define ELITE_IS_PROLIFIC
 #define ELITE_EATS_MOST
 

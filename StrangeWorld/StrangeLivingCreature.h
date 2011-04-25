@@ -2,6 +2,7 @@
 #define _StrangeLivingCreature_h_included_
 
 #include "StrangeCreature.h"
+#include <memory>
 
 class StrangeNeuralNetwork;
 class StrangeNNGene;
@@ -72,8 +73,8 @@ protected:
     int bodyRadiusLevel_;
 
     int angleChange_;
-    StrangeNeuralNetwork* brain_;
-    StrangeNNGene* gene_;
+    std::auto_ptr<StrangeNeuralNetwork> brain_;
+    std::auto_ptr<StrangeNNGene> gene_;
 
 public:
     StrangeLivingCreature( StrangeNNGene* aGene );

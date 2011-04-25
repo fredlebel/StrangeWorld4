@@ -122,7 +122,6 @@ void StrangeWorld::tick()
             ++i;
         }
     }
-    // Check for extinctions
     /*
     int j;
     if ( 0 == StrangeCarnivore::CREATURE_COUNT && ( NULL != StrangeCarnivore::ourEliteGene ) )
@@ -140,15 +139,18 @@ void StrangeWorld::tick()
             addCreature( new StrangeHerbivore( pGene ), true );
         }
     */
-    while ( 15 >= StrangeCarnivore::CREATURE_COUNT && ( NULL != StrangeCarnivore::ourEliteGene ) )
+
+    // Check for extinctions
+    while ( StrangeCarnivore::CREATURE_COUNT < 15 && ( StrangeCarnivore::ourEliteGene.get() != NULL ) )
     {
-        StrangeNNGene* pGene = new StrangeNNGene( StrangeCarnivore::ourEliteGene );
+        // Create based on the elite gene.
+        StrangeNNGene* pGene = new StrangeNNGene( StrangeCarnivore::ourEliteGene.get() );
         pGene->mutate();
         addCreature( new StrangeCarnivore( pGene ), true );
     }
-    while ( 15 >= StrangeHerbivore::CREATURE_COUNT && ( NULL != StrangeHerbivore::ourEliteGene ) )
+    while ( StrangeHerbivore::CREATURE_COUNT < 15 && ( StrangeHerbivore::ourEliteGene.get() != NULL ) )
     {
-        StrangeNNGene* pGene = new StrangeNNGene( StrangeHerbivore::ourEliteGene );
+        StrangeNNGene* pGene = new StrangeNNGene( StrangeHerbivore::ourEliteGene.get() );
         pGene->mutate();
         addCreature( new StrangeHerbivore( pGene ), true );
     }

@@ -32,10 +32,8 @@ StrangeLivingCreature::StrangeLivingCreature( StrangeNNGene* aGene )
     , angleChange_( 0 )
 {
     // Construct the brain
-    if ( gene_ != NULL )
-        brain_ = new StrangeNeuralNetwork( gene_ );
-    else
-        brain_ = NULL;
+    if ( gene_.get() != NULL )
+        brain_.reset(new StrangeNeuralNetwork( gene_.get() ));
 
 }
 
@@ -45,8 +43,6 @@ StrangeLivingCreature::StrangeLivingCreature( StrangeNNGene* aGene )
 // Return type     : 
 StrangeLivingCreature::~StrangeLivingCreature()
 {
-    delete gene_;
-    delete brain_;
 }
 
 
@@ -55,7 +51,7 @@ StrangeLivingCreature::~StrangeLivingCreature()
 // Return type     : StrangeNNGene* 
 StrangeNNGene* StrangeLivingCreature::getGene()
 {
-    return gene_;
+    return gene_.get();
 }
 
 

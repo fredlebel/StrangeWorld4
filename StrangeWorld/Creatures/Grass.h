@@ -1,27 +1,27 @@
 #ifndef _STRANGEGRASS_H_INCLUDED_
 #define _STRANGEGRASS_H_INCLUDED_
 
-#include "StrangeCreature.h"
+#include "Creature.h"
 
-class StrangeWorld;
+class World;
 class StrangeGeneCollection;
 
-class StrangeGrass : public StrangeCreature
+class Grass : public Creature
 {
 public:
     // Race counter
     static int CREATURE_COUNT;
     
-    StrangeGrass();
-    virtual ~StrangeGrass();
+    Grass();
+    virtual ~Grass();
     
     // Overloaded
     virtual void initHealth();
     virtual void initPosition();
-    virtual int getRadius();
+    virtual double getRadius();
     virtual void die();
 
-    virtual bool accept(StrangeCreatureOperation* operation);
+    virtual bool accept(Operation* operation);
 };
 
 #endif // _STRANGEGRASS_H_INCLUDED_

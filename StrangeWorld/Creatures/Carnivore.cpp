@@ -1,61 +1,61 @@
-#include "StrangeCarnivore.h"
-#include "StrangeCreatureOperation.h"
-#include "StrangeNNGene.h"
-#include "StrangeWorldSettings.h"
+#include "Carnivore.h"
+#include "Operations/Operation.h"
+#include "NeuralNetwork/NNGene.h"
+#include "WorldSettings.h"
 
-int StrangeCarnivore::CREATURE_COUNT       = 0;
-int StrangeCarnivore::ourAverageAge        = 0;
-int StrangeCarnivore::ourAverageSpawnCount = 0;
-int StrangeCarnivore::ourAverageFeedCount  = 0;
-int StrangeCarnivore::ourDeathCount        = 0;
+int Carnivore::CREATURE_COUNT       = 0;
+int Carnivore::ourAverageAge        = 0;
+int Carnivore::ourAverageSpawnCount = 0;
+int Carnivore::ourAverageFeedCount  = 0;
+int Carnivore::ourDeathCount        = 0;
 
 // Elite gene, usually the latest one
-std::auto_ptr<StrangeNNGene> StrangeCarnivore::ourEliteGene;
+std::auto_ptr<NNGene> Carnivore::ourEliteGene;
 
 
-// Function name   : StrangeCarnivore::StrangeCarnivore
+// Function name   : Carnivore::Carnivore
 // Description     : 
 // Return type     : 
-// Argument        : StrangeNNGene* aGene
-StrangeCarnivore::StrangeCarnivore( StrangeNNGene* aGene ) : StrangeLivingCreature( aGene )
+// Argument        : NNGene* aGene
+Carnivore::Carnivore( NNGene* aGene ) : LivingCreature( aGene )
 {
-    ++StrangeCarnivore::CREATURE_COUNT;
+    ++Carnivore::CREATURE_COUNT;
 }
 
 
-// Function name   : StrangeCarnivore::~StrangeCarnivore
+// Function name   : Carnivore::~Carnivore
 // Description     : 
 // Return type     : 
-StrangeCarnivore::~StrangeCarnivore()
+Carnivore::~Carnivore()
 {
-    --StrangeCarnivore::CREATURE_COUNT;
+    --Carnivore::CREATURE_COUNT;
 }
 
 
-// Function name   : StrangeCarnivore::accept
+// Function name   : Carnivore::accept
 // Description     : 
 // Return type     : bool 
-// Argument        : StrangeCreatureOperation* operation
-bool StrangeCarnivore::accept( StrangeCreatureOperation* operation )
+// Argument        : Operation* operation
+bool Carnivore::accept( Operation* operation )
 {
     operation->visit_Carnivore( this );
     return true;
 }
 
 
-// Function name   : StrangeCarnivore::getWidth
+// Function name   : Carnivore::getWidth
 // Description     : 
 // Return type     : int 
-int StrangeCarnivore::getRadius()
+double Carnivore::getRadius()
 {
     return bodyRadius_;
 }
 
 
-// Function name   : StrangeCarnivore::die
+// Function name   : Carnivore::die
 // Description     : 
 // Return type     : void 
-void StrangeCarnivore::die()
+void Carnivore::die()
 {
     bool isElite = false;
 

@@ -1,7 +1,10 @@
-#include "OperationCreatureRenderer.h"
 #include "StrangeView.h"
-#include "OperationCreatureConcentration.h"
-#include "StrangeWorld.h"
+#include "Operations/OpConcentration.h"
+#include "Operations/OpRender.h"
+#include "Creatures/Carnivore.h"
+#include "Creatures/Herbivore.h"
+#include "Creatures/Grass.h"
+#include "World.h"
 #include "MathAccel.h"
 
 #include <windows.h> // Only for wsprintf
@@ -30,11 +33,11 @@ OperationCreatureRenderer::~OperationCreatureRenderer()
 // Function name   : OperationCreatureRenderer::visit_Carnivore
 // Description     : 
 // Return type     : void 
-// Argument        : StrangeCarnivore* creature
-void OperationCreatureRenderer::visit_Carnivore( StrangeCarnivore* creature )
+// Argument        : Carnivore* creature
+void OperationCreatureRenderer::visit_Carnivore( Carnivore* creature )
 {
-    int lx = (int)( creature->getX() - MathAccel::cos( creature->angle_ ) * creature->getRadius() * 2 );
-    int ly = (int)( creature->getY() + MathAccel::sin( creature->angle_ ) * creature->getRadius() * 2 );
+    double lx = creature->getX() - MathAccel::cos( creature->angle_ ) * creature->getRadius() * 2;
+    double ly = creature->getY() + MathAccel::sin( creature->angle_ ) * creature->getRadius() * 2;
     view_->drawCarnivore(
         creature->getX(), creature->getY(), lx, ly,
         creature->getRadius(),
@@ -49,8 +52,8 @@ void OperationCreatureRenderer::visit_Carnivore( StrangeCarnivore* creature )
 // Function name   : OperationCreatureRenderer::visit_Grass
 // Description     : 
 // Return type     : void 
-// Argument        : StrangeGrass* creature
-void OperationCreatureRenderer::visit_Grass( StrangeGrass* creature )
+// Argument        : Grass* creature
+void OperationCreatureRenderer::visit_Grass( Grass* creature )
 {
     view_->drawGrass(
         creature->getX(),
@@ -72,11 +75,11 @@ void OperationCreatureRenderer::visit_Grass( StrangeGrass* creature )
 // Function name   : OperationCreatureRenderer::visit_Herbivore
 // Description     : 
 // Return type     : void 
-// Argument        : StrangeHerbivore* creature
-void OperationCreatureRenderer::visit_Herbivore( StrangeHerbivore* creature )
+// Argument        : Herbivore* creature
+void OperationCreatureRenderer::visit_Herbivore( Herbivore* creature )
 {
-    int lx = (int)( creature->getX() - MathAccel::cos( creature->angle_ ) * creature->getRadius() * 2 );
-    int ly = (int)( creature->getY() + MathAccel::sin( creature->angle_ ) * creature->getRadius() * 2 );
+    double lx = creature->getX() - MathAccel::cos( creature->angle_ ) * creature->getRadius() * 2;
+    double ly = creature->getY() + MathAccel::sin( creature->angle_ ) * creature->getRadius() * 2;
     view_->drawHerbivore(
         creature->getX(), creature->getY(), lx, ly,
         creature->getRadius(),
@@ -90,7 +93,7 @@ void OperationCreatureRenderer::visit_Herbivore( StrangeHerbivore* creature )
 //
 //
 //
-void OperationCreatureRenderer::renderLivingCreature( StrangeLivingCreature* creature )
+void OperationCreatureRenderer::renderLivingCreature( LivingCreature* creature )
 {
     if ( drawSensors_ && creature->selected_ && creature->isLiving() )
     {
@@ -102,8 +105,8 @@ void OperationCreatureRenderer::renderLivingCreature( StrangeLivingCreature* cre
 
         if ( drawData_ )
         {
-            OperationCreatureConcentration rc( creature->getWorld(), creature, vrx, vry, creature->eyeRadius_ );
-            OperationCreatureConcentration lc( creature->getWorld(), creature, vlx, vly, creature->eyeRadius_ );
+            OpConcentration rc( creature->getWorld(), creature, vrx, vry, creature->eyeRadius_ );
+            OpConcentration lc( creature->getWorld(), creature, vlx, vly, creature->eyeRadius_ );
 
             creature->getWorld()->globalOperation( &rc );
             creature->getWorld()->globalOperation( &lc );
@@ -111,23 +114,23 @@ void OperationCreatureRenderer::renderLivingCreature( StrangeLivingCreature* cre
             {
                 wchar_t buff[80];
                 wsprintf( buff, L"(R:%i, G:%i, B:%i)", 
-                    rc.carnivoreConcentration, 
-                    rc.grassConcentration, 
-                    rc.herbivoreConcentration );
+                    (int)rc.carnivoreConcentration, 
+                    (int)rc.grassConcentration, 
+                    (int)rc.herbivoreConcentration );
                 view_->write( vrx, vry, buff );
             }
             {
                 wchar_t buff[80];
                 wsprintf( buff, L"(R:%i, G:%i, B:%i)", 
-                    lc.carnivoreConcentration, 
-                    lc.grassConcentration, 
-                    lc.herbivoreConcentration );
+                    (int)lc.carnivoreConcentration, 
+                    (int)lc.grassConcentration, 
+                    (int)lc.herbivoreConcentration );
                 view_->write( vlx, vly, buff );
             }
             {
                 wchar_t buff[80];
                 wsprintf( buff, L"(H:%i)", 
-                    creature->getHealth() );
+                    (int)creature->getHealth() );
                 view_->write( creature->getX(), creature->getY(), buff );
             }
         }

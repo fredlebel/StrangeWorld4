@@ -6,7 +6,7 @@
 #include "TransferFunction.h"
 #include "Neuron.h"
 
-class StrangeNNGene;
+class NNGene;
 
 class StrangeNeuralNetwork
 {
@@ -47,7 +47,7 @@ public: // Consts
     static const int BiasMin    = -1000;
     
 public:
-    StrangeNeuralNetwork( StrangeNNGene* gene );
+    StrangeNeuralNetwork( NNGene* gene );
     ~StrangeNeuralNetwork();
 
     void push( unsigned int index, int value );
@@ -58,7 +58,7 @@ public:
     NeuralNetworkType& getNetwork();
 
 private:
-    void buildFromGene( StrangeNNGene* gene );
+    void buildFromGene( NNGene* gene );
     NeuralNetworkType network_;
 };
 

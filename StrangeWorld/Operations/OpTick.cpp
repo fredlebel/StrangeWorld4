@@ -1,15 +1,18 @@
-#include "OperationCreatureTick.h"
-#include "OperationCreatureHitTest.h"
-#include "StrangeWorld.h"
-#include "StrangeWorldSettings.h"
-#include "StrangeNNGene.h"
+#include "Operations/OpTick.h"
+#include "Operations/OpHitTest.h"
+#include "Creatures/Carnivore.h"
+#include "Creatures/Herbivore.h"
+#include "Creatures/Grass.h"
+#include "World.h"
+#include "WorldSettings.h"
+#include "NeuralNetwork/NNGene.h"
 #include "FastRand.h"
 #include <assert.h>
 
 // Function name   : OperationCreatureTick::OperationCreatureTick
 // Description     : 
 // Return type     : 
-OperationCreatureTick::OperationCreatureTick( StrangeWorld* world )
+OperationCreatureTick::OperationCreatureTick( World* world )
     : world_( world )
 {
     hurtCarnivore_ = (world_->getTickCount() % CARNIVORE_TICK_HURT) == 0;
@@ -28,23 +31,23 @@ OperationCreatureTick::~OperationCreatureTick()
 // Function name   : OperationCreatureTick::basicPhase
 // Description     : 
 // Return type     : void 
-// Argument        : StrangeCreatureOperation* op
-void OperationCreatureTick::basicPhase( StrangeCreatureOperation* op,
-                                       StrangeLivingCreature* creature,
-                                       OperationCreatureHitTest::WantToHit wth )
+// Argument        : Operation* op
+void OperationCreatureTick::basicPhase( Operation* op,
+                                       LivingCreature* creature,
+                                       OpHitTest::WantToHit wth )
 {
     creature->age();
 
     // Neural processing
     creature->pushBrainInputs();
     creature->tickBrain();
-    int energyUsed = creature->popBrainOutputs();
+    double energyUsed = creature->popBrainOutputs();
     creature->hurt( energyUsed );
 
     if ( creature->isLiving() )
     {
         // Eating phase
-        StrangeCreature* c;
+        Creature* c;
         c = world_->checkContact( creature, wth );
         if ( NULL != c )
         {
@@ -58,20 +61,20 @@ void OperationCreatureTick::basicPhase( StrangeCreatureOperation* op,
 // Function name   : OperationCreatureTick::visit_Carnivore
 // Description     : 
 // Return type     : void 
-// Argument        : StrangeCarnivore* creature
-void OperationCreatureTick::visit_Carnivore( StrangeCarnivore* creature )
+// Argument        : Carnivore* creature
+void OperationCreatureTick::visit_Carnivore( Carnivore* creature )
 {
     // Operation to eat
-    class EatOperation : public StrangeCreatureOperation
+    class EatOperation : public Operation
     {
     public:
-        EatOperation( StrangeCarnivore* c, StrangeWorld* world )
+        EatOperation( Carnivore* c, World* world )
             : creature_( c )
             , world_( world )
         {
         }
 
-        virtual void visit_Herbivore( StrangeHerbivore* target )
+        virtual void visit_Herbivore( Herbivore* target )
         {
             if ( target->isLiving() )
             {
@@ -80,29 +83,29 @@ void OperationCreatureTick::visit_Carnivore( StrangeCarnivore* creature )
             }
 
             // Feed on dead creature's corpse
-            creature_->heal( target->hurt( FEED_AMOUNT ) >> 1 );
+            creature_->heal( target->hurt( FEED_AMOUNT ) / 2 );
             ++creature_->feedCount_;
 
             // If the creature is ready to spawn
             if ( creature_->getHealth() >= CARNIVORE_SPAWN_THRES &&
                  creature_->getAge() > CARNIVORE_SPAWN_AGE_THRES &&
-                 StrangeCarnivore::CREATURE_COUNT < 25 )
+                 Carnivore::CREATURE_COUNT < 25 )
             {
                 // Spawning takes energy
                 creature_->hurt( SPAWN_HURT * 2 );
                 creature_->spawnCount_++;
-                int x = creature_->getX();
-                int y = creature_->getY();
+                double x = creature_->getX();
+                double y = creature_->getY();
                 for ( int i = 0; i < CARNIVORE_OFFSPRING_COUNT; ++i )
                 {
-                    StrangeNNGene* geneCol = new StrangeNNGene( creature_->getGene() );
+                    NNGene* geneCol = new NNGene( creature_->getGene() );
                     // Elitism can speed up evolution
 #ifdef USE_ELITISM
-                    if ( NULL != StrangeCarnivore::ourEliteGene )
-                        geneCol->merge( StrangeCarnivore::ourEliteGene );
+                    if ( NULL != Carnivore::ourEliteGene )
+                        geneCol->merge( Carnivore::ourEliteGene );
 #endif
                     geneCol->mutate();
-                    StrangeCarnivore* nc = new StrangeCarnivore( geneCol );
+                    Carnivore* nc = new Carnivore( geneCol );
                     // Propagate the selection to the offspring
                     nc->selected_ = creature_->selected_;
                     world_->addCreature( nc, false );
@@ -113,15 +116,15 @@ void OperationCreatureTick::visit_Carnivore( StrangeCarnivore* creature )
             }
         }
 
-        StrangeCarnivore* creature_;
-        StrangeWorld* world_;
+        Carnivore* creature_;
+        World* world_;
     };
 
     if ( creature->isLiving() )
     {
         static EatOperation op( creature, world_ );
         op.creature_ = creature;
-        basicPhase( &op, creature, OperationCreatureHitTest::HitHerbivore );
+        basicPhase( &op, creature, OpHitTest::HitHerbivore );
 
         if ( hurtCarnivore_ )
             creature->hurt( 1 );
@@ -136,8 +139,8 @@ void OperationCreatureTick::visit_Carnivore( StrangeCarnivore* creature )
 // Function name   : OperationCreatureTick::visit_Grass
 // Description     : 
 // Return type     : void 
-// Argument        : StrangeGrass* creature
-void OperationCreatureTick::visit_Grass( StrangeGrass* creature )
+// Argument        : Grass* creature
+void OperationCreatureTick::visit_Grass( Grass* creature )
 {
 //    // Grass heals constantly
 //    if ( creature->isLiving() )
@@ -148,20 +151,20 @@ void OperationCreatureTick::visit_Grass( StrangeGrass* creature )
 // Function name   : OperationCreatureTick::visit_Herbivore
 // Description     : 
 // Return type     : void 
-// Argument        : StrangeHerbivore* creature
-void OperationCreatureTick::visit_Herbivore( StrangeHerbivore* creature )
+// Argument        : Herbivore* creature
+void OperationCreatureTick::visit_Herbivore( Herbivore* creature )
 {
     // Operation to eat
-    class EatOperation : public StrangeCreatureOperation
+    class EatOperation : public Operation
     {
     public:
-        EatOperation( StrangeHerbivore* c, StrangeWorld* world )
+        EatOperation( Herbivore* c, World* world )
             : creature_( c )
             , world_( world )
         {
         }
 
-        virtual void visit_Grass( StrangeGrass* target )
+        virtual void visit_Grass( Grass* target )
         {
             // Feed on grass
             creature_->heal( target->hurt( FEED_AMOUNT ) );
@@ -174,18 +177,18 @@ void OperationCreatureTick::visit_Herbivore( StrangeHerbivore* creature )
                 // Spawning takes energy
                 creature_->hurt( SPAWN_HURT );
                 creature_->spawnCount_++;
-                int x = creature_->getX();
-                int y = creature_->getY();
+                double x = creature_->getX();
+                double y = creature_->getY();
                 for ( int i = 0; i < HERBIVORE_OFFSPRING_COUNT; ++i )
                 {
-                    StrangeNNGene* geneCol = new StrangeNNGene( creature_->getGene() );
+                    NNGene* geneCol = new NNGene( creature_->getGene() );
                     // Elitism can speed up evolution
 #ifdef USE_ELITISM
-                    if ( NULL != StrangeHerbivore::ourEliteGene )
-                        geneCol->merge( StrangeHerbivore::ourEliteGene );
+                    if ( NULL != Herbivore::ourEliteGene )
+                        geneCol->merge( Herbivore::ourEliteGene );
 #endif
                     geneCol->mutate();
-                    StrangeHerbivore* nc = new StrangeHerbivore( geneCol );
+                    Herbivore* nc = new Herbivore( geneCol );
                     // Propagate the selection to the offspring
                     nc->selected_ = creature_->selected_;
                     world_->addCreature( nc, false );
@@ -196,15 +199,15 @@ void OperationCreatureTick::visit_Herbivore( StrangeHerbivore* creature )
             }
         }
 
-        StrangeHerbivore* creature_;
-        StrangeWorld* world_;
+        Herbivore* creature_;
+        World* world_;
     };
 
     if ( creature->isLiving() )
     {
         static EatOperation op( creature, world_ );
         op.creature_ = creature;
-        basicPhase( &op, creature, OperationCreatureHitTest::HitGrass );
+        basicPhase( &op, creature, OpHitTest::HitGrass );
 
         if ( hurtHerbivore_ )
             creature->hurt( 1 );

@@ -26,7 +26,7 @@ static LOGBRUSH emptyBrushLB = { BS_HOLLOW };
 static HBRUSH emptyBrush = CreateBrushIndirect( &emptyBrushLB );
 
 
-StrangeWindowsView::StrangeWindowsView( HWND hWnd, StrangeWorld* world )
+StrangeWindowsView::StrangeWindowsView( HWND hWnd, World* world )
     : hWnd_( hWnd )
     , world_( world )
 {
@@ -79,8 +79,8 @@ int StrangeWindowsView::getHeight()
 
 // Rendering calls
 void StrangeWindowsView::drawCarnivore(
-    int x, int y, int tx, int ty, int r,
-    int health, bool selected, bool dead )
+    double x, double y, double tx, double ty, double r,
+    double health, bool selected, bool dead )
 {
     HBRUSH br = emptyBrush;
     HPEN pen = gRedPensPastel[ max( health / 8, 0 ) ];
@@ -107,8 +107,8 @@ void StrangeWindowsView::drawCarnivore(
 }
 
 void StrangeWindowsView::drawHerbivore(
-    int x, int y, int tx, int ty, int r,
-    int health, bool selected, bool dead )
+    double x, double y, double tx, double ty, double r,
+    double health, bool selected, bool dead )
 {
     HBRUSH br = emptyBrush;
     HPEN pen = gBluePensPastel[ max( health / 8, 0 ) ];
@@ -134,7 +134,7 @@ void StrangeWindowsView::drawHerbivore(
     SelectObject(dc_, prevPen);
 }
 
-void StrangeWindowsView::drawGrass( int x, int y, int r, int health, bool selected )
+void StrangeWindowsView::drawGrass( double x, double y, double r, double health, bool selected )
 {
     HBRUSH br = emptyBrush;
     HPEN pen = gGreenPensPastel[ max( health / 8, 0 ) ];
@@ -155,7 +155,7 @@ void StrangeWindowsView::drawGrass( int x, int y, int r, int health, bool select
     SelectObject(dc_, prevPen);
 }
 
-void StrangeWindowsView::drawSensors( int x1, int y1, int x2, int y2, int r )
+void StrangeWindowsView::drawSensors( double x1, double y1, double x2, double y2, double r )
 {
     HBRUSH br = emptyBrush;
     HPEN pen = WhitePen;
@@ -170,7 +170,7 @@ void StrangeWindowsView::drawSensors( int x1, int y1, int x2, int y2, int r )
     SelectObject(dc_, prevPen);
 }
 
-void StrangeWindowsView::write( int x, int y, std::wstring const& str )
+void StrangeWindowsView::write( double x, double y, std::wstring const& str )
 {
     assert( dc_ );
     ::SetTextColor( dc_, RGB( 255, 255, 255 ) );
@@ -183,7 +183,7 @@ void StrangeWindowsView::write( int x, int y, std::wstring const& str )
 
 #else
 
-StrangeWindowsView::StrangeWindowsView( HWND hWnd, StrangeWorld* world )
+StrangeWindowsView::StrangeWindowsView( HWND hWnd, World* world )
     : hWnd_( hWnd )
     , world_( world )
 {

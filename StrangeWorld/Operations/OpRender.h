@@ -1,12 +1,13 @@
 #ifndef _OperationCreatureRenderer_h_included_
 #define _OperationCreatureRenderer_h_included_
 
-#include "StrangeCreatureOperation.h"
+#include "Operation.h"
 
 class StrangeView;
+class LivingCreature;
 
 class OperationCreatureRenderer 
-    : public StrangeCreatureOperation
+    : public Operation
 {
 private:    // CTOR/DTOR
 protected:  // CTOR/DTOR
@@ -22,12 +23,12 @@ protected:  // Attributes
 public:     // Attributes
 
 private:    // Functions
-    void renderLivingCreature( StrangeLivingCreature* creature );
+    void renderLivingCreature( LivingCreature* creature );
 protected:  // Functions
 public:     // Functions
-    virtual void visit_Carnivore( StrangeCarnivore* creature );
-    virtual void visit_Grass( StrangeGrass* creature );
-    virtual void visit_Herbivore( StrangeHerbivore* creature );
+    virtual void visit_Carnivore( Carnivore* creature );
+    virtual void visit_Grass( Grass* creature );
+    virtual void visit_Herbivore( Herbivore* creature );
 };
 
 #endif //_OperationCreatureRenderer_h_included_

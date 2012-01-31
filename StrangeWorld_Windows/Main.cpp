@@ -1,20 +1,20 @@
 #include <windows.h>
 
 #include "StrangeWindowsView.h"
-#include "StrangeWorld.h"
-#include "StrangeCarnivore.h"
-#include "StrangeHerbivore.h"
-#include "StrangeGrass.h"
-#include "OperationCreatureRenderer.h"
-#include "OperationCreatureHitTest.h"
-#include "StrangeNNGene.h"
-#include "StrangeNeuralNetwork.h"
+#include "World.h"
+#include "Creatures/Carnivore.h"
+#include "Creatures/Herbivore.h"
+#include "Creatures/Grass.h"
+#include "Operations/OpRender.h"
+#include "Operations/OpHitTest.h"
+#include "NeuralNetwork/NNGene.h"
+#include "NeuralNetwork/StrangeNeuralNetwork.h"
 #include "MathAccel.h"
 #include "FastRand.h"
 #include "resource.h"
 #include "time.h"
 
-#define APPLICATION_NAME L"StrangeWorld 4.6"
+#define APPLICATION_NAME L"World 4.6"
 
 HINSTANCE theMainInstance;
 HWND theMainWindow;
@@ -32,7 +32,7 @@ HICON trayIcon;
 bool gDrawSensors = false;
 bool gDrawData = false;
 
-StrangeWorld* gWorld = NULL;
+World* gWorld = NULL;
 StrangeWindowsView* gView = NULL;
 
 static HDC backBufferDC = NULL;
@@ -89,10 +89,10 @@ void Tick()
     // Every 250,000 iterations save the elite genes in case the program crashes
     if ( ( gWorld->getTickCount() % 250000 ) == 0 )
     {
-        if ( StrangeCarnivore::ourEliteGene.get() != NULL )
-            StrangeCarnivore::ourEliteGene->saveGene( L"carnivore.gen4" );
-        if ( StrangeHerbivore::ourEliteGene.get() != NULL )
-            StrangeHerbivore::ourEliteGene->saveGene( L"herbivore.gen4" );
+        if ( Carnivore::ourEliteGene.get() != NULL )
+            Carnivore::ourEliteGene->saveGene( L"carnivore.gen4" );
+        if ( Herbivore::ourEliteGene.get() != NULL )
+            Herbivore::ourEliteGene->saveGene( L"herbivore.gen4" );
     }
 
     static int nextCarnivoreGenerationDump = 0;
@@ -102,9 +102,9 @@ void Tick()
     {
         static unsigned int generationDumpInterval = 10000;
 
-        if ( StrangeCarnivore::ourEliteGene.get() != NULL )
+        if ( Carnivore::ourEliteGene.get() != NULL )
         {
-            int currentGeneration = StrangeCarnivore::ourEliteGene->getGeneration();
+            int currentGeneration = Carnivore::ourEliteGene->getGeneration();
             if ( nextCarnivoreGenerationDump == 0 )
                 nextCarnivoreGenerationDump = (currentGeneration / generationDumpInterval) * 
                 generationDumpInterval + generationDumpInterval;
@@ -112,14 +112,14 @@ void Tick()
             {
                 wchar_t genFilename[80];
                 wsprintf(genFilename, L"carnivore_%i.gen4", nextCarnivoreGenerationDump );
-                StrangeCarnivore::ourEliteGene->saveGene( genFilename );
+                Carnivore::ourEliteGene->saveGene( genFilename );
                 nextCarnivoreGenerationDump += generationDumpInterval;
             }
         }
 
-        if ( StrangeHerbivore::ourEliteGene.get() != NULL )
+        if ( Herbivore::ourEliteGene.get() != NULL )
         {
-            int currentGeneration = StrangeHerbivore::ourEliteGene->getGeneration();
+            int currentGeneration = Herbivore::ourEliteGene->getGeneration();
             if ( nextHerbivoreGenerationDump == 0 )
                 nextHerbivoreGenerationDump = (currentGeneration / generationDumpInterval) * 
                 generationDumpInterval + generationDumpInterval;
@@ -127,7 +127,7 @@ void Tick()
             {
                 wchar_t genFilename[80];
                 wsprintf(genFilename, L"herbivore_%i.gen4", nextHerbivoreGenerationDump );
-                StrangeHerbivore::ourEliteGene->saveGene( genFilename );
+                Herbivore::ourEliteGene->saveGene( genFilename );
                 nextHerbivoreGenerationDump += generationDumpInterval;
             }
         }
@@ -153,17 +153,17 @@ void Tick()
     {
         wchar_t buff[200];
         wsprintf(buff, APPLICATION_NAME L" - %i - Carnivore:(%i/%i-%i-%i-%i) Herbivore:(%i/%i-%i-%i-%i) Mutation(%i)", gWorld->getTickCount(),
-            ( StrangeCarnivore::ourEliteGene.get() != NULL ? StrangeCarnivore::ourEliteGene->getGeneration() : 0 ),
+            ( Carnivore::ourEliteGene.get() != NULL ? Carnivore::ourEliteGene->getGeneration() : 0 ),
             nextCarnivoreGenerationDump,
-            StrangeCarnivore::ourAverageAge,
-            StrangeCarnivore::ourAverageSpawnCount,
-            StrangeCarnivore::ourAverageFeedCount,
-            ( StrangeHerbivore::ourEliteGene.get() != NULL ? StrangeHerbivore::ourEliteGene->getGeneration() : 0 ),
+            Carnivore::ourAverageAge,
+            Carnivore::ourAverageSpawnCount,
+            Carnivore::ourAverageFeedCount,
+            ( Herbivore::ourEliteGene.get() != NULL ? Herbivore::ourEliteGene->getGeneration() : 0 ),
             nextHerbivoreGenerationDump,
-            StrangeHerbivore::ourAverageAge,
-            StrangeHerbivore::ourAverageSpawnCount,
-            StrangeHerbivore::ourAverageFeedCount,
-            StrangeWorld::getMutationLevel() );
+            Herbivore::ourAverageAge,
+            Herbivore::ourAverageSpawnCount,
+            Herbivore::ourAverageFeedCount,
+            World::getMutationLevel() );
         SetWindowText(theMainWindow, buff);
     }
 
@@ -251,10 +251,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE prev, LPSTR cmd, int show)
 template <class CreatureType>
 void populateWorld( std::wstring const& geneFileName )
 {
-    StrangeNNGene g( geneFileName );
+    NNGene g( geneFileName );
     for ( int i = 0; i < 13; ++i )
     {
-        CreatureType* pCreature = new CreatureType( new StrangeNNGene( &g ) );
+        CreatureType* pCreature = new CreatureType( new NNGene( &g ) );
         gWorld->addCreature( pCreature, true );
     }
 }
@@ -283,11 +283,11 @@ LRESULT CALLBACK MainWndProc( HWND theWnd, UINT theMsg, WPARAM wParam, LPARAM lP
             gDrawSensors = false;
             gDrawData = false;
 
-            gWorld = new StrangeWorld( WORLD_WIDTH, WORLD_HEIGHT, GROWTH_RATE );
+            gWorld = new World( WORLD_WIDTH, WORLD_HEIGHT, GROWTH_RATE );
             gView = new StrangeWindowsView( theWnd, gWorld );
 
-            populateWorld<StrangeCarnivore>( L"carnivore.gen4" );
-            populateWorld<StrangeHerbivore>( L"herbivore.gen4" );
+            populateWorld<Carnivore>( L"carnivore.gen4" );
+            populateWorld<Herbivore>( L"herbivore.gen4" );
 
         } break;
     case TRAYNOTIFY:
@@ -316,7 +316,7 @@ LRESULT CALLBACK MainWndProc( HWND theWnd, UINT theMsg, WPARAM wParam, LPARAM lP
         {
             int xPos = LOWORD( lParam );
             int yPos = HIWORD( lParam );
-            OperationCreatureHitTest hittestOp( xPos, yPos );
+            OpHitTest hittestOp( xPos, yPos );
             gWorld->globalOperation( &hittestOp );
             gWorld->toggleCreatureSelection( hittestOp.creatureHit );
             InvalidateRect( theWnd, NULL, FALSE );
@@ -378,7 +378,7 @@ LRESULT CALLBACK MainWndProc( HWND theWnd, UINT theMsg, WPARAM wParam, LPARAM lP
             }
             else if ( wParam >= '0' && wParam <= '9' )
             {
-                StrangeWorld::setMutationLevel( (unsigned int)wParam - '0' );
+                World::setMutationLevel( (unsigned int)wParam - '0' );
             }
             else if ( wParam == 'c' )
             {
@@ -396,10 +396,10 @@ LRESULT CALLBACK MainWndProc( HWND theWnd, UINT theMsg, WPARAM wParam, LPARAM lP
             }
             else if ( wParam == 'w' )
             {
-                if (StrangeCarnivore::ourEliteGene.get() != NULL)
-                    StrangeCarnivore::ourEliteGene->saveGene( L"carnivore.gen4" );
-                if (StrangeHerbivore::ourEliteGene.get() != NULL)
-                    StrangeHerbivore::ourEliteGene->saveGene( L"herbivore.gen4" );
+                if (Carnivore::ourEliteGene.get() != NULL)
+                    Carnivore::ourEliteGene->saveGene( L"carnivore.gen4" );
+                if (Herbivore::ourEliteGene.get() != NULL)
+                    Herbivore::ourEliteGene->saveGene( L"herbivore.gen4" );
             }
             else if ( wParam == 'R' )
             {
@@ -412,10 +412,10 @@ LRESULT CALLBACK MainWndProc( HWND theWnd, UINT theMsg, WPARAM wParam, LPARAM lP
         } break;
     case WM_CLOSE:
         {
-            if (StrangeCarnivore::ourEliteGene.get() != NULL)
-                StrangeCarnivore::ourEliteGene->saveGene( L"carnivore.gen4" );
-            if (StrangeHerbivore::ourEliteGene.get() != NULL)
-                StrangeHerbivore::ourEliteGene->saveGene( L"herbivore.gen4" );
+            if (Carnivore::ourEliteGene.get() != NULL)
+                Carnivore::ourEliteGene->saveGene( L"carnivore.gen4" );
+            if (Herbivore::ourEliteGene.get() != NULL)
+                Herbivore::ourEliteGene->saveGene( L"herbivore.gen4" );
 
             DestroyIcon(trayIcon);
             NOTIFYICONDATA iconData;

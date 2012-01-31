@@ -1,12 +1,12 @@
 #include "StrangeNeuralNetwork.h"
-#include "StrangeNNGene.h"
-#include "StrangeWorldSettings.h"
+#include "NNGene.h"
+#include "WorldSettings.h"
 
 // Function name   : StrangeNeuralNetwork::StrangeNeuralNetwork
 // Description     : 
 // Return type     : 
-// Argument        : StrangeNNGene* gene
-StrangeNeuralNetwork::StrangeNeuralNetwork( StrangeNNGene* gene )
+// Argument        : NNGene* gene
+StrangeNeuralNetwork::StrangeNeuralNetwork( NNGene* gene )
 {
     buildFromGene( gene );
 }
@@ -68,8 +68,8 @@ int StrangeNeuralNetwork::pop( unsigned int index )
 // Function name   : StrangeNeuralNetwork::buildFromGene
 // Description     : Assumes an empty network
 // Return type     : void 
-// Argument        : StrangeNNGene* gene
-void StrangeNeuralNetwork::buildFromGene( StrangeNNGene* gene )
+// Argument        : NNGene* gene
+void StrangeNeuralNetwork::buildFromGene( NNGene* gene )
 {
 
     std::vector<NeuronType*> inputNodeList;
@@ -86,7 +86,7 @@ void StrangeNeuralNetwork::buildFromGene( StrangeNNGene* gene )
     }
 
     // Start from the beginning
-    StrangeNNGene::GeneData::iterator neuronIt = gene->data_.begin();
+    NNGene::GeneData::iterator neuronIt = gene->data_.begin();
 
     // First step is to create all neurons in the order
     // the are found in the gene data.
@@ -104,7 +104,7 @@ void StrangeNeuralNetwork::buildFromGene( StrangeNNGene* gene )
     for ( ; neuronIt != gene->data_.end(); ++neuronIt, ++neuronIndex )
     {
         // For every dendrite on this neuron
-        StrangeNNGene::Neuron::iterator dendriteIt = neuronIt->begin();
+        NNGene::Neuron::iterator dendriteIt = neuronIt->begin();
         for ( ; dendriteIt != neuronIt->end(); ++dendriteIt )
         {
             if ( dendriteIt->first < 0 )

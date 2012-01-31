@@ -28,11 +28,11 @@ public:
     virtual int getHeight() = 0;
 
     // Rendering calls
-    virtual void drawCarnivore( int x, int y, int tx, int ty, int r, int health, bool selected, bool dead ) = 0;
-    virtual void drawHerbivore( int x, int y, int tx, int ty, int r, int health, bool selected, bool dead ) = 0;
-    virtual void drawGrass( int x, int y, int r, int health, bool selected ) = 0;
-    virtual void drawSensors( int x1, int y1, int x2, int y2, int r ) = 0;
-    virtual void write( int x, int y, std::wstring const& str ) = 0;
+    virtual void drawCarnivore( double x, double y, double tx, double ty, double r, double health, bool selected, bool dead ) = 0;
+    virtual void drawHerbivore( double x, double y, double tx, double ty, double r, double health, bool selected, bool dead ) = 0;
+    virtual void drawGrass( double x, double y, double r, double health, bool selected ) = 0;
+    virtual void drawSensors( double x1, double y1, double x2, double y2, double r ) = 0;
+    virtual void write( double x, double y, std::wstring const& str ) = 0;
 };
 
 #endif //_StrangeView_h_included_

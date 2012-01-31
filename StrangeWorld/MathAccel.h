@@ -4,17 +4,12 @@
 #include <math.h>
 #define PI 3.14159265
 
-#define USE_SQRT_LOOKUP
-
 class MathAccel
 {
 private:
     static double* cosLookup;
     static double* sinLookup;
     static double* toRadLookup;
-#if defined( USE_SQRT_LOOKUP )
-    static int* sqrtTableLookup;
-#endif
 
 public:
     static void MathAccel::init()
@@ -28,12 +23,6 @@ public:
             cosLookup[i] = ::cos(toRadLookup[i]);
         for (int i = 0; i < 360; ++i)
             sinLookup[i] = ::sin(toRadLookup[i]);
-#if defined( USE_SQRT_LOOKUP )
-        sqrtTableLookup = new int[4000000];
-        for (int i = 0; i < 4000000; ++i)
-            sqrtTableLookup[i] = (int)::sqrt((double)i);
-#endif
-
     }
 
 
@@ -41,10 +30,10 @@ public:
     // Description     : 
     // Return type     : double 
     // Argument        : int angle
-    inline static double MathAccel::toRadians(int angle)
+    inline static double MathAccel::toRadians(double angle)
     {
         angle = fixAngle(angle);
-        return toRadLookup[angle];
+        return toRadLookup[(int)angle];
     }
 
 
@@ -52,10 +41,10 @@ public:
     // Description     : 
     // Return type     : double 
     // Argument        : int angle
-    inline static double MathAccel::sin(int angle)
+    inline static double MathAccel::sin(double angle)
     {
         angle = fixAngle(angle);
-        return sinLookup[angle];
+        return sinLookup[(int)angle];
     }
 
 
@@ -63,10 +52,10 @@ public:
     // Description     : 
     // Return type     : double 
     // Argument        : int angle
-    inline static double MathAccel::cos(int angle)
+    inline static double MathAccel::cos(double angle)
     {
         angle = fixAngle(angle);
-        return cosLookup[angle];
+        return cosLookup[(int)angle];
     }
 
 
@@ -74,12 +63,12 @@ public:
     // Description     : 
     // Return type     : int 
     // Argument        : int angle
-    inline static int MathAccel::fixAngle(int angle)
+    inline static double MathAccel::fixAngle(double angle)
     {
-        if (angle >= 360)
-            return angle - 360;
-        else if (angle < 0)
-            return angle + 360;
+        while (angle >= 360)
+            angle -= 360;
+        while (angle < 0)
+            angle += 360;
         return angle;
     }
 
@@ -88,13 +77,9 @@ public:
     // Description     : 
     // Return type     : int 
     // Argument        : int val
-    inline static int MathAccel::sqrt(const int val)
+    inline static double MathAccel::sqrt(const double val)
     {
-#if defined( USE_SQRT_LOOKUP )
-        return sqrtTableLookup[val];
-#else
         return (int)::sqrt((double)val);
-#endif
     }
 
 
@@ -105,10 +90,10 @@ public:
     // Argument        : int y1
     // Argument        : int x2
     // Argument        : int y2
-    inline static int MathAccel::dist(int x1, int y1, int x2, int y2)
+    inline static double MathAccel::dist(double x1, double y1, double x2, double y2)
     {
-        int dx = x2 - x1;
-        int dy = y2 - y1;
+        double dx = x2 - x1;
+        double dy = y2 - y1;
         return sqrt(dx * dx + dy * dy);
     }
 };

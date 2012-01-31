@@ -3,7 +3,7 @@
 
 #include <Windows.h>
 #include "StrangeView.h"
-#include "StrangeWorld.h"
+#include "World.h"
 
 //#define USE_GDIPLUS
 #if defined( USE_GDIPLUS )
@@ -14,7 +14,7 @@ class StrangeWindowsView
     : public StrangeView
 {
 public:
-    StrangeWindowsView( HWND hWnd, StrangeWorld* world );
+    StrangeWindowsView( HWND hWnd, World* world );
     virtual ~StrangeWindowsView();
 
     void beginPaint( HDC dc );
@@ -24,15 +24,15 @@ public:
     virtual int getHeight();
 
     // Rendering calls
-    virtual void drawCarnivore( int x, int y, int tx, int ty, int r, int health, bool selected, bool dead );
-    virtual void drawHerbivore( int x, int y, int tx, int ty, int r, int health, bool selected, bool dead );
-    virtual void drawGrass( int x, int y, int r, int health, bool selected );
-    virtual void drawSensors( int x1, int y1, int x2, int y2, int r );
-    virtual void write( int x, int y, std::wstring const& str );
+    virtual void drawCarnivore( double x, double y, double tx, double ty, double r, double health, bool selected, bool dead );
+    virtual void drawHerbivore( double x, double y, double tx, double ty, double r, double health, bool selected, bool dead );
+    virtual void drawGrass( double x, double y, double r, double health, bool selected );
+    virtual void drawSensors( double x1, double y1, double x2, double y2, double r );
+    virtual void write( double x, double y, std::wstring const& str );
 
 protected:
     HWND hWnd_;
-    StrangeWorld* world_;
+    World* world_;
     HDC dc_;
 #if defined( USE_GDIPLUS )
     Gdiplus::Graphics* graphics_;

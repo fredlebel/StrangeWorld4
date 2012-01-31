@@ -1,18 +1,21 @@
-#include "OperationCreatureHitTest.h"
+#include "OpHitTest.h"
+#include "Creatures/Carnivore.h"
+#include "Creatures/Herbivore.h"
+#include "Creatures/Grass.h"
 #include "MathAccel.h"
 
 
-// Function name   : OperationCreatureHitTest::OperationCreatureHitTest
+// Function name   : OpHitTest::OpHitTest
 // Description     : 
 // Return type     : 
 // Argument        : int x
 // Argument        : int y
 // Argument        : int width
-// Argument        : StrangeWorld* world
-// Argument        : StrangeCreature* ignore
-OperationCreatureHitTest::OperationCreatureHitTest( int x, int y, StrangeCreature* creature, WantToHit wth )
+// Argument        : World* world
+// Argument        : Creature* ignore
+OpHitTest::OpHitTest( double x, double y, Creature* creature, WantToHit wth )
     : creature_( creature )
-    , creatureHit( NULL )
+    , creatureHit( 0 )
     , x_( x )
     , y_( y )
     , wth_( wth )
@@ -20,32 +23,32 @@ OperationCreatureHitTest::OperationCreatureHitTest( int x, int y, StrangeCreatur
 }
 
 
-// Function name   : OperationCreatureHitTest::~OperationCreatureHitTest
+// Function name   : OpHitTest::~OpHitTest
 // Description     : 
 // Return type     : 
-OperationCreatureHitTest::~OperationCreatureHitTest()
+OpHitTest::~OpHitTest()
 {
 }
 
 
-// Function name   : OperationCreatureHitTest::visit_creature
+// Function name   : OpHitTest::visit_creature
 // Description     : 
 // Return type     : void 
-// Argument        : StrangeCreature* creature
-void OperationCreatureHitTest::checkHit( StrangeCreature* target, WantToHit hit )
+// Argument        : Creature* creature
+void OpHitTest::checkHit( Creature* target, WantToHit hit )
 {
-    if ( creature_ == NULL )
+    if ( creature_ == 0 )
     {
-        int cx      = target->getX();
-        int cy      = target->getY();
-        int radius  = target->getRadius();
+        double cx      = target->getX();
+        double cy      = target->getY();
+        double radius  = target->getRadius();
 
         /*if (( x_ >= ( cx - radius ) ) &&
             ( x_ <= ( cx + radius ) ) &&
             ( y_ >= ( cy - radius ) ) &&
             ( y_ <= ( cy + radius ) ) )*/
         {
-            int distance = MathAccel::dist( cx, cy, x_, y_ );
+            double distance = MathAccel::dist( cx, cy, x_, y_ );
             if ( distance <= radius &&
                 ( wth_ == HitAll || wth_ == hit ) )
             {
@@ -56,17 +59,17 @@ void OperationCreatureHitTest::checkHit( StrangeCreature* target, WantToHit hit 
     }
     else if ( target != creature_ )
     {
-        int cx      = target->getX();
-        int cy      = target->getY();
-        int tradius = target->getRadius();
-        int radius  = creature_->getRadius();
+        double cx      = target->getX();
+        double cy      = target->getY();
+        double tradius = target->getRadius();
+        double radius  = creature_->getRadius();
 
         /*if (( ( x_ + radius ) >= ( cx - tradius ) ) &&
             ( ( x_ - radius ) <= ( cx + tradius ) ) &&
             ( ( y_ + radius ) >= ( cy - tradius ) ) &&
             ( ( y_ - radius ) <= ( cy + tradius ) ) )*/
         {
-            int distance = MathAccel::dist( cx, cy, x_, y_ );
+            double distance = MathAccel::dist( cx, cy, x_, y_ );
             if ( distance <= (radius + tradius) &&
                 ( wth_ == HitAll || wth_ == hit ) )
             {
@@ -77,17 +80,17 @@ void OperationCreatureHitTest::checkHit( StrangeCreature* target, WantToHit hit 
     }
 }
 
-void OperationCreatureHitTest::visit_Carnivore( StrangeCarnivore* target )
+void OpHitTest::visit_Carnivore( Carnivore* target )
 {
     checkHit( target, HitCarnivore );
 }
 
-void OperationCreatureHitTest::visit_Herbivore( StrangeHerbivore* target )
+void OpHitTest::visit_Herbivore( Herbivore* target )
 {
     checkHit( target, HitHerbivore );
 }
 
-void OperationCreatureHitTest::visit_Grass( StrangeGrass* target )
+void OpHitTest::visit_Grass( Grass* target )
 {
     checkHit( target, HitGrass );
 }

@@ -1,13 +1,13 @@
 #ifndef _StrangeLivingCreature_h_included_
 #define _StrangeLivingCreature_h_included_
 
-#include "StrangeCreature.h"
+#include "Creature.h"
 #include <memory>
 
 class StrangeNeuralNetwork;
-class StrangeNNGene;
+class NNGene;
 
-class StrangeLivingCreature : public StrangeCreature
+class LivingCreature : public Creature
 {
 public:
     // Neural network input addresses
@@ -59,32 +59,24 @@ public:
     // Counts the number of times the creature has fed.
     int feedCount_;
 
-    int angle_;             // Angle the creature is pointing
-    int eyeRadius_;         // Radius of vision for the eyes
-    int eyeAngle_;          // Angle between both eyes
-    int bodyRadius_;         // Radius of vision for the eyes
+    double angle_;          // Angle the creature is pointing
+    double eyeRadius_;      // Radius of vision for the eyes
+    double eyeAngle_;       // Angle between both eyes
+    double bodyRadius_;		// Radius of vision for the eyes
 
 protected:
-    int xLevel_;
-    int yLevel_;
-    int angleLevel_;
-    int eyeRadiusLevel_;
-    int eyeAngleLevel_;
-    int bodyRadiusLevel_;
-
-    int angleChange_;
     std::auto_ptr<StrangeNeuralNetwork> brain_;
-    std::auto_ptr<StrangeNNGene> gene_;
+    std::auto_ptr<NNGene> gene_;
 
 public:
-    StrangeLivingCreature( StrangeNNGene* aGene );
-    virtual ~StrangeLivingCreature();
+    LivingCreature( NNGene* aGene );
+    virtual ~LivingCreature();
 
-    StrangeNNGene* getGene();
+    NNGene* getGene();
     void tickBrain();
     void pushBrainInputs();
     // Returns energy used
-    int popBrainOutputs();
+    double popBrainOutputs();
 };
 
 

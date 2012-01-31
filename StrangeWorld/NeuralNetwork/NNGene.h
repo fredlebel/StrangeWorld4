@@ -5,9 +5,9 @@
 #include <vector>
 #include <map>
 #include <assert.h>
-#include "StrangeWorldSettings.h"
+#include "WorldSettings.h"
 
-class StrangeNNGene
+class NNGene
 {
 public:
 
@@ -15,13 +15,13 @@ public:
     static void setMutationLevel( unsigned int level );
     static unsigned int getMutationLevel();
 
-    StrangeNNGene( std::wstring const& filename );
-    StrangeNNGene( StrangeNNGene* gene );
-    ~StrangeNNGene();
+    NNGene( std::wstring const& filename );
+    NNGene( NNGene* gene );
+    ~NNGene();
 
     unsigned int getGeneration();
     void mutate();
-    void merge( StrangeNNGene* gene );
+    void merge( NNGene* gene );
 
     bool saveGene( std::wstring const& filename );
 

@@ -4,20 +4,20 @@
 #include <assert.h>
 #include <sstream>
 
-#include "StrangeNNGene.h"
+#include "NNGene.h"
 #include "StrangeNeuralNetwork.h"
 #include "FastRand.h"
 
 static unsigned int globalMutationLevel = 1;
 
 
-StrangeNNGene::StrangeNNGene( StrangeNNGene* gene )
+NNGene::NNGene( NNGene* gene )
 {
     data_ = gene->data_;
     geneGeneration_ = gene->geneGeneration_ + 1;
 }
 
-StrangeNNGene::StrangeNNGene( std::wstring const& filename )
+NNGene::NNGene( std::wstring const& filename )
 {
     if ( ! loadFromFile( filename ) )
     {
@@ -47,11 +47,11 @@ StrangeNNGene::StrangeNNGene( std::wstring const& filename )
     }
 }
 
-StrangeNNGene::~StrangeNNGene()
+NNGene::~NNGene()
 {
 }
 
-void StrangeNNGene::mutate()
+void NNGene::mutate()
 {
     if ( globalMutationLevel == 0 )
         return;
@@ -279,11 +279,11 @@ void StrangeNNGene::mutate()
 #endif
 }
 
-void StrangeNNGene::merge( StrangeNNGene* )
+void NNGene::merge( NNGene* )
 {
 }
 
-bool StrangeNNGene::saveGene( std::wstring const& filename )
+bool NNGene::saveGene( std::wstring const& filename )
 {
     FILE* pFile = _wfopen( filename.c_str(), L"wb" );
     if ( NULL == pFile )
@@ -322,7 +322,7 @@ bool StrangeNNGene::saveGene( std::wstring const& filename )
     return true;
 }
 
-bool StrangeNNGene::loadFromFile( std::wstring const& filename )
+bool NNGene::loadFromFile( std::wstring const& filename )
 {
     // =@!540!~!258!-123!~@!240!~!~!~!566=@!540!~@!~!566@!-800!12=@!540!12!~@!-800!~!566
     FILE* pFile = _wfopen( filename.c_str(), L"rb" );
@@ -331,7 +331,7 @@ bool StrangeNNGene::loadFromFile( std::wstring const& filename )
         return false;
     }
 
-    // Validate that this is indeed a StrangeWorld 4 gene file.
+    // Validate that this is indeed a World 4 gene file.
     char header[] = GENEFILE_HEADER;
     // Read the header
     fread( (void*)header, strlen(header), sizeof(char), pFile );
@@ -362,7 +362,7 @@ bool StrangeNNGene::loadFromFile( std::wstring const& filename )
     return true;
 }
 
-bool StrangeNNGene::createGeneData( std::string const& str )
+bool NNGene::createGeneData( std::string const& str )
 {
     // Extract all the neurons
     std::vector<std::string> values = splitToken( str, GENEFILE_TOKEN_NEURON );
@@ -384,7 +384,7 @@ bool StrangeNNGene::createGeneData( std::string const& str )
     return true;
 }
 
-bool StrangeNNGene::createNeuron( Neuron& neuron, std::string const& str )
+bool NNGene::createNeuron( Neuron& neuron, std::string const& str )
 {
     // Extract all dendrites
     std::vector<std::string> values = splitToken( str, GENEFILE_TOKEN_DENDRITE );
@@ -409,7 +409,7 @@ bool StrangeNNGene::createNeuron( Neuron& neuron, std::string const& str )
 }
 
 
-std::vector<std::string> StrangeNNGene::splitToken( std::string const& str, std::string const& token )
+std::vector<std::string> NNGene::splitToken( std::string const& str, std::string const& token )
 {
     std::vector<std::string> values;
 
@@ -430,21 +430,21 @@ std::vector<std::string> StrangeNNGene::splitToken( std::string const& str, std:
     return values;
 }
 
-void StrangeNNGene::setMutationLevel( unsigned int level )
+void NNGene::setMutationLevel( unsigned int level )
 {
     if ( level >= 0 && level <= 9 )
         globalMutationLevel = level;
 }
 
-unsigned int StrangeNNGene::getMutationLevel()
+unsigned int NNGene::getMutationLevel()
 {
     return globalMutationLevel;
 }
 
-// Function name   : StrangeNNGene::getGeneration
+// Function name   : NNGene::getGeneration
 // Description     : 
 // Return type     : unsigned int 
-unsigned int StrangeNNGene::getGeneration()
+unsigned int NNGene::getGeneration()
 {
     return geneGeneration_;
 }

@@ -1,14 +1,14 @@
 #ifndef _STRANGECARNIVORE_H_INCLUDED_
 #define _STRANGECARNIVORE_H_INCLUDED_
 
-#include "StrangeLivingCreature.h"
+#include "LivingCreature.h"
 
-class StrangeWorld;
-class StrangeCreatureOperation;
+class World;
+class Operation;
 class StrangeGene;
-class StrangeNNGene;
+class NNGene;
 
-class StrangeCarnivore : public StrangeLivingCreature
+class Carnivore : public LivingCreature
 {
 public:
     // Race counter
@@ -18,16 +18,16 @@ public:
     static int ourAverageFeedCount;
     static int ourDeathCount;
     // Elite gene, usually the latest one
-    static std::auto_ptr<StrangeNNGene> ourEliteGene;
+    static std::auto_ptr<NNGene> ourEliteGene;
     
-    StrangeCarnivore(StrangeNNGene* aGene);
-    virtual ~StrangeCarnivore();
+    Carnivore(NNGene* aGene);
+    virtual ~Carnivore();
     
     // Overloaded
-    virtual int getRadius();
+    virtual double getRadius();
     virtual void die();
 
-    virtual bool accept(StrangeCreatureOperation* operation);
+    virtual bool accept(Operation* operation);
 };
 
 #endif // _STRANGECARNIVORE_H_INCLUDED_

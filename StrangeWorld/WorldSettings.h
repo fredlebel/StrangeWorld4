@@ -28,18 +28,16 @@
 
 //#define USE_STATIC_NEURALNET    // Don't add/remove neurons
 
-#define NEURAL_NET_INPUT_COUNT      22
-#define NEURAL_NET_OUTPUT_COUNT      5
-
-#define MUTATION_BIAS_SOFT         10 // +/- changes to dendrite bias
-#define MUTATION_BIAS_INVERSE    1500 // A dendrite value is inversed
-#define MUTATION_BIAS_CHANGE     2500 // A dendrite value is randomized
-#define MUTATION_BIAS_ADDREM     5000 // A dendrite is added/removed
-#define MUTATION_BIAS_MOVE       5000 // A dendrite is reconnected to another neuron.
-#define MUTATION_NEURON_ADDREM   8000 // A neuron is added/removed
+#define MUTATION_BIAS_SOFT         200 // Small changes to the bias [0.0 .. X/100]
+// Bigger numbers indicate rarer mutations.
+#define MUTATION_BIAS_INVERSE    15000 // A dendrite value is inversed
+#define MUTATION_BIAS_CHANGE     25000 // A dendrite value is randomized
+#define MUTATION_BIAS_ADDREM     50000 // A dendrite is added/removed
+#define MUTATION_BIAS_MOVE       50000 // A dendrite is reconnected to another neuron.
+#define MUTATION_NEURON_ADDREM   80000 // A neuron is added/removed
 
 
-#define GENEFILE_HEADER          "SW4 DNA FREE"
+#define GENEFILE_HEADER          "SW5 DNA FREE"
 #define GENEFILE_TOKEN_NEURON    "@"
 #define GENEFILE_TOKEN_DENDRITE  "!"
 #define GENEFILE_TOKEN_COMMA     ","

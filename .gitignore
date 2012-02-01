@@ -1,7 +1,15 @@
 Debug
+Release
+StrangeWorld_Windows/Debug
 StrangeWorld_Windows/Release
 *.ncb
 *.suo
 *.pdb
 *.user
-*.gen4
+*.gen5
+
+StrangeWorld.opensdf
+StrangeWorld.sdf
+StrangeWorld_Windows/StrangeWorld_Windows.aps
+StrangeWorld_Windows/StrangeWorld_Windows.vcxproj.filters
+ipch

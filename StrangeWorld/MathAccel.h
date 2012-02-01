@@ -2,7 +2,8 @@
 #define _MATHACCEL_H_
 
 #include <math.h>
-#define PI 3.14159265
+static double pi = 3.14159265;
+#define USE_SQRT_LOOKUP
 
 class MathAccel
 {
@@ -10,6 +11,9 @@ private:
     static double* cosLookup;
     static double* sinLookup;
     static double* toRadLookup;
+#if defined( USE_SQRT_LOOKUP )
+    static double* sqrtTableLookup;
+#endif
 
 public:
     static void MathAccel::init()
@@ -18,11 +22,16 @@ public:
         sinLookup = new double[360];
         toRadLookup = new double[360];
         for (int i = 0; i < 360; ++i)
-            toRadLookup[i] = (i * PI / 180);
+            toRadLookup[i] = (i * pi / 180);
         for (int i = 0; i < 360; ++i)
             cosLookup[i] = ::cos(toRadLookup[i]);
         for (int i = 0; i < 360; ++i)
             sinLookup[i] = ::sin(toRadLookup[i]);
+#if defined( USE_SQRT_LOOKUP )
+        sqrtTableLookup = new double[4000000];
+        for (int i = 0; i < 4000000; ++i)
+            sqrtTableLookup[i] = ::sqrt((double)i);
+#endif
     }
 
 
@@ -79,7 +88,11 @@ public:
     // Argument        : int val
     inline static double MathAccel::sqrt(const double val)
     {
+#if defined( USE_SQRT_LOOKUP )
+        return sqrtTableLookup[(int)val];
+#else
         return (int)::sqrt((double)val);
+#endif
     }
 
 

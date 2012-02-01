@@ -26,8 +26,8 @@ public:
     bool saveGene( std::wstring const& filename );
 
 public:
-    typedef int Bias;
-    typedef std::map<int, Bias> Neuron;
+    typedef double Bias;
+    typedef std::map<double, Bias> Neuron;
     typedef std::vector<Neuron> GeneData;
     GeneData data_;
 

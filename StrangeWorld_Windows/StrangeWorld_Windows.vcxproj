@@ -86,10 +86,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\NeuralNetwork\NeuralNetwork.h" />
-    <ClInclude Include="..\NeuralNetwork\Neuron.h" />
-    <ClInclude Include="..\NeuralNetwork\SummationFunction.h" />
-    <ClInclude Include="..\NeuralNetwork\TransferFunction.h" />
     <ClInclude Include="..\StrangeWorld\Creatures\Carnivore.h" />
     <ClInclude Include="..\StrangeWorld\Creatures\Creature.h" />
     <ClInclude Include="..\StrangeWorld\Creatures\Grass.h" />
@@ -97,7 +93,7 @@
     <ClInclude Include="..\StrangeWorld\Creatures\LivingCreature.h" />
     <ClInclude Include="..\StrangeWorld\FastRand.h" />
     <ClInclude Include="..\StrangeWorld\MathAccel.h" />
-    <ClInclude Include="..\StrangeWorld\NeuralNetwork\StrangeNeuralNetwork.h" />
+    <ClInclude Include="..\StrangeWorld\NeuralNetwork\NeuralNetwork.h" />
     <ClInclude Include="..\StrangeWorld\NeuralNetwork\NNGene.h" />
     <ClInclude Include="..\StrangeWorld\Operations\OpConcentration.h" />
     <ClInclude Include="..\StrangeWorld\Operations\OpHitTest.h" />
@@ -118,7 +114,7 @@
     <ClCompile Include="..\StrangeWorld\Creatures\LivingCreature.cpp" />
     <ClCompile Include="..\StrangeWorld\FastRand.cpp" />
     <ClCompile Include="..\StrangeWorld\MathAccel.cpp" />
-    <ClCompile Include="..\StrangeWorld\NeuralNetwork\StrangeNeuralNetwork.cpp" />
+    <ClCompile Include="..\StrangeWorld\NeuralNetwork\NeuralNetwork.cpp" />
     <ClCompile Include="..\StrangeWorld\NeuralNetwork\NNGene.cpp" />
     <ClCompile Include="..\StrangeWorld\Operations\OpConcentration.cpp" />
     <ClCompile Include="..\StrangeWorld\Operations\OpHitTest.cpp" />

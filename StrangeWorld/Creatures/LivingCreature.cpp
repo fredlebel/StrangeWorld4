@@ -3,7 +3,7 @@
 #include <iostream>
 #include "LivingCreature.h"
 #include "World.h"
-#include "NeuralNetwork/StrangeNeuralNetwork.h"
+#include "NeuralNetwork/NeuralNetwork.h"
 #include "Operations/OpConcentration.h"
 #include "NeuralNetwork/NNGene.h"
 #include "MathAccel.h"
@@ -26,7 +26,7 @@ LivingCreature::LivingCreature( NNGene* aGene )
 {
     // Construct the brain
     if ( gene_.get() != NULL )
-        brain_.reset(new StrangeNeuralNetwork( gene_.get() ));
+        brain_ = NeuralNetwork::buildFromGene( NNI_COUNT, gene_.get() );
 
 }
 
@@ -73,13 +73,13 @@ void LivingCreature::pushBrainInputs()
     world_->globalOperation( &lc );
     world_->globalOperation( &rc );
 
-    brain_->push( NNI_L_CARN,       __min( lc.carnivoreConcentration,       1000 ) );
-    brain_->push( NNI_L_HERB,       __min( lc.herbivoreConcentration,       1000 ) );
-    brain_->push( NNI_L_GRAS,       __min( lc.grassConcentration,           1000 ) );
+    brain_->push( NNI_L_CARN,       __min( lc.carnivoreConcentration,       1000.0 ) );
+    brain_->push( NNI_L_HERB,       __min( lc.herbivoreConcentration,       1000.0 ) );
+    brain_->push( NNI_L_GRAS,       __min( lc.grassConcentration,           1000.0 ) );
 
-    brain_->push( NNI_R_CARN,       __min( rc.carnivoreConcentration,       1000 ) );
-    brain_->push( NNI_R_HERB,       __min( rc.herbivoreConcentration,       1000 ) );
-    brain_->push( NNI_R_GRAS,       __min( rc.grassConcentration,           1000 ) );
+    brain_->push( NNI_R_CARN,       __min( rc.carnivoreConcentration,       1000.0 ) );
+    brain_->push( NNI_R_HERB,       __min( rc.herbivoreConcentration,       1000.0 ) );
+    brain_->push( NNI_R_GRAS,       __min( rc.grassConcentration,           1000.0 ) );
 
     brain_->push( NNI_HEALTH,       __min( health_, 1000 ) );
     brain_->push( NNI_EYE_ANGLE,    eyeAngle_  * EYE_ANGLE_MULTIPLYER );
@@ -157,7 +157,7 @@ double LivingCreature::popBrainOutputs()
     // Process body radius
     {
         double value = brain_->pop( NNO_BODY_RADIUS );
-		bodyRadius_ += value / 200;
+		bodyRadius_ += value / 500;
 
         // Limit eye radius
         bodyRadius_ = __min( bodyRadius_, MAX_BODY_RADIUS );

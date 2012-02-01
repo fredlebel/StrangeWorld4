@@ -1,12 +1,11 @@
-#include <windows.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <assert.h>
 #include <sstream>
+#include <fstream>
 
 #include "NNGene.h"
-#include "StrangeNeuralNetwork.h"
+#include "NeuralNetwork.h"
 #include "FastRand.h"
+#include "Creatures/LivingCreature.h"
 
 static unsigned int globalMutationLevel = 1;
 
@@ -25,20 +24,20 @@ NNGene::NNGene( std::wstring const& filename )
 
         std::ostringstream geneStr;
         // Neurons that connect to all inputs
-        geneStr << "@!-1,500!-2,500!-3,500!-4,500!-5,500!-6,500!-7,500!-8,500!-9,500!-10,500!-11,500!-12,500!-13,500!-14,500!-15,500!-16,500!-17,500!-18,500!-19,500!-20,500!-21,500!-22,500";
-        geneStr << "@!-1,500!-2,500!-3,500!-4,500!-5,500!-6,500!-7,500!-8,500!-9,500!-10,500!-11,500!-12,500!-13,500!-14,500!-15,500!-16,500!-17,500!-18,500!-19,500!-20,500!-21,500!-22,500";
-        geneStr << "@!-1,500!-2,500!-3,500!-4,500!-5,500!-6,500!-7,500!-8,500!-9,500!-10,500!-11,500!-12,500!-13,500!-14,500!-15,500!-16,500!-17,500!-18,500!-19,500!-20,500!-21,500!-22,500";
-        geneStr << "@!-1,500!-2,500!-3,500!-4,500!-5,500!-6,500!-7,500!-8,500!-9,500!-10,500!-11,500!-12,500!-13,500!-14,500!-15,500!-16,500!-17,500!-18,500!-19,500!-20,500!-21,500!-22,500";
-        geneStr << "@!-1,500!-2,500!-3,500!-4,500!-5,500!-6,500!-7,500!-8,500!-9,500!-10,500!-11,500!-12,500!-13,500!-14,500!-15,500!-16,500!-17,500!-18,500!-19,500!-20,500!-21,500!-22,500";
-        geneStr << "@!-1,500!-2,500!-3,500!-4,500!-5,500!-6,500!-7,500!-8,500!-9,500!-10,500!-11,500!-12,500!-13,500!-14,500!-15,500!-16,500!-17,500!-18,500!-19,500!-20,500!-21,500!-22,500";
+        geneStr << "@!-1,1!-2,1!-3,1!-4,1!-5,1!-6,1!-7,1!-8,1!-9,1!-10,1!-11,1!-12,1!-13,1!-14,1!-15,1";
+        geneStr << "@!-1,1!-2,1!-3,1!-4,1!-5,1!-6,1!-7,1!-8,1!-9,1!-10,1!-11,1!-12,1!-13,1!-14,1!-15,1";
+        geneStr << "@!-1,1!-2,1!-3,1!-4,1!-5,1!-6,1!-7,1!-8,1!-9,1!-10,1!-11,1!-12,1!-13,1!-14,1!-15,1";
+        geneStr << "@!-1,1!-2,1!-3,1!-4,1!-5,1!-6,1!-7,1!-8,1!-9,1!-10,1!-11,1!-12,1!-13,1!-14,1!-15,1";
+        geneStr << "@!-1,1!-2,1!-3,1!-4,1!-5,1!-6,1!-7,1!-8,1!-9,1!-10,1!-11,1!-12,1!-13,1!-14,1!-15,1";
+        geneStr << "@!-1,1!-2,1!-3,1!-4,1!-5,1!-6,1!-7,1!-8,1!-9,1!-10,1!-11,1!-12,1!-13,1!-14,1!-15,1";
 
         // Neurons that connect to those neurons
         // The last neurons in the gene are the outputs
-        geneStr << "@!0,500!1,500!2,500!3,500!4,500!5,500";
-        geneStr << "@!0,500!1,500!2,500!3,500!4,500!5,500";
-        geneStr << "@!0,500!1,500!2,500!3,500!4,500!5,500";
-        geneStr << "@!0,500!1,500!2,500!3,500!4,500!5,500";
-        geneStr << "@!0,500!1,500!2,500!3,500!4,500!5,500";
+        geneStr << "@!0,1!1,1!2,1!3,1!4,1!5,1";
+        geneStr << "@!0,1!1,1!2,1!3,1!4,1!5,1";
+        geneStr << "@!0,1!1,1!2,1!3,1!4,1!5,1";
+        geneStr << "@!0,1!1,1!2,1!3,1!4,1!5,1";
+        geneStr << "@!0,1!1,1!2,1!3,1!4,1!5,1";
 
         if ( ! createGeneData( geneStr.str() ) )
         {
@@ -57,31 +56,28 @@ void NNGene::mutate()
         return;
     unsigned int i;
 
-    // Decrement dendrite bias
+    // Small changes to the biases
     for ( i = 0; i < globalMutationLevel && !data_.empty(); ++i )
     {
+		// Pick a random neuron.
         Neuron& neuron  = data_[ randomMT() % data_.size() ];
         if ( neuron.empty() )
             continue;
+		// Pick a random dendrite
         Neuron::size_type dendriteIndex = randomMT() % neuron.size();
         Neuron::iterator dendriteIt = neuron.begin();
         std::advance( dendriteIt, dendriteIndex );
-        int amount = randomMT() % MUTATION_BIAS_SOFT;
-        if ( dendriteIt->second >= StrangeNeuralNetwork::BiasMin + amount )
-            dendriteIt->second -= amount;
-    }
-    // Increment dendrite bias
-    for ( i = 0; i < globalMutationLevel && !data_.empty(); ++i )
-    {
-        Neuron& neuron  = data_[ randomMT() % data_.size() ];
-        if ( neuron.empty() )
-            continue;
-        Neuron::size_type dendriteIndex = randomMT() % neuron.size();
-        Neuron::iterator dendriteIt = neuron.begin();
-        std::advance( dendriteIt, dendriteIndex );
-        int amount = randomMT() % MUTATION_BIAS_SOFT;
-        if ( dendriteIt->second <= StrangeNeuralNetwork::BiasMax - amount )
-            dendriteIt->second += amount;
+
+		// Scale by a specific range.
+		double minMul = 0.99;
+		double maxMul = 1.01;
+		double ganularity = 100000;
+		int range = (int)((maxMul - minMul) * ganularity);
+        double amount = (randomMT() % range) / ganularity + minMul;
+
+        dendriteIt->second = std::min(NeuralNetwork::BiasMax,
+							 std::max(NeuralNetwork::BiasMin,
+							 dendriteIt->second * amount));
     }
 
     // Once in a while, inverse a value
@@ -107,14 +103,15 @@ void NNGene::mutate()
             Neuron::size_type dendriteIndex = randomMT() % neuron.size();
             Neuron::iterator dendriteIt = neuron.begin();
             std::advance( dendriteIt, dendriteIndex );
-            int value = ( randomMT() % ( StrangeNeuralNetwork::BiasMax * 2 ) ) -
-                StrangeNeuralNetwork::BiasMax;
+            int value = ( randomMT() % ( (int)NeuralNetwork::BiasMax * 2 ) ) -
+                NeuralNetwork::BiasMax;
             // Modify its bias.
             dendriteIt->second = value;
         }
     }
 
 #if !defined( USE_STATIC_NEURALNET )
+	int neuralNetworkInputCount = LivingCreature::NNI_COUNT;
 
     // Once in a while, remove/add a dendrite
     if ( ( randomMT() % MUTATION_BIAS_ADDREM ) < (globalMutationLevel-1) && !data_.empty() )
@@ -125,11 +122,10 @@ void NNGene::mutate()
         {
             // Random neuron, don't forget to include the input neurons.
             int targetNeuronIndex =
-                (randomMT() % (data_.size() + NEURAL_NET_INPUT_COUNT))
-                - NEURAL_NET_INPUT_COUNT;
-            // A random value for this new dendrite.
-            int value = ( randomMT() % ( StrangeNeuralNetwork::BiasMax * 2 ) ) -
-                StrangeNeuralNetwork::BiasMax;
+                (randomMT() % (data_.size() + neuralNetworkInputCount))
+                - neuralNetworkInputCount;
+            // Always create a neural dendrite
+            int value = 0;
             // Might already exist, in which case it acts as a random mutation.
             neuron.insert( std::make_pair( targetNeuronIndex, value ) );
         }
@@ -157,8 +153,8 @@ void NNGene::mutate()
             neuron.erase( dendriteIt );
             // Random neuron, don't forget to include the input neurons.
             int targetNeuronIndex =
-                (randomMT() % (data_.size() + NEURAL_NET_INPUT_COUNT))
-                - NEURAL_NET_INPUT_COUNT;
+                (randomMT() % (data_.size() + neuralNetworkInputCount))
+                - neuralNetworkInputCount;
             // Insert the new dendrite
             neuron.insert( std::make_pair( targetNeuronIndex, value ) );
         }
@@ -175,7 +171,7 @@ void NNGene::mutate()
             if ( data_.empty() )
             {
                 // Connect it to all inputs
-                for ( int i = 1; i <= NEURAL_NET_INPUT_COUNT; ++i )
+                for ( int i = 1; i <= neuralNetworkInputCount; ++i )
                     neuron.insert( std::make_pair( -i, 500 ) );
                 data_.push_back( neuron );
             }
@@ -216,11 +212,11 @@ void NNGene::mutate()
                 // Don't forget to include the input neurons.
                 {
                     int targetNeuronIndex =
-                        (randomMT() % (data_.size() + NEURAL_NET_INPUT_COUNT))
-                        - NEURAL_NET_INPUT_COUNT;
+                        (randomMT() % (data_.size() + neuralNetworkInputCount))
+                        - neuralNetworkInputCount;
                     // A random value for this new dendrite.
-                    int value = ( randomMT() % ( StrangeNeuralNetwork::BiasMax * 2 ) ) -
-                        StrangeNeuralNetwork::BiasMax;
+                    int value = ( randomMT() % ( (int)NeuralNetwork::BiasMax * 2 ) ) -
+                        NeuralNetwork::BiasMax;
                     // Insert the new dendrite.
                     data_[index].insert( std::make_pair( targetNeuronIndex, value ) );
                 }
@@ -229,8 +225,8 @@ void NNGene::mutate()
                 {
                     int targetNeuronIndex = randomMT() % data_.size();
                     // A random value for this new dendrite.
-                    int value = ( randomMT() % ( StrangeNeuralNetwork::BiasMax * 2 ) ) -
-                        StrangeNeuralNetwork::BiasMax;
+                    int value = ( randomMT() % ( (int)NeuralNetwork::BiasMax * 2 ) ) -
+                        NeuralNetwork::BiasMax;
                     // Insert the new dendrite.
                     data_[targetNeuronIndex].insert( std::make_pair( index, value ) );
                 }
@@ -285,59 +281,52 @@ void NNGene::merge( NNGene* )
 
 bool NNGene::saveGene( std::wstring const& filename )
 {
-    FILE* pFile = _wfopen( filename.c_str(), L"wb" );
-    if ( NULL == pFile )
+	std::ofstream file;
+	file.open( filename );
+
+    if ( !file.is_open() )
         return false;
 
     // Write the file header
-    fwrite( GENEFILE_HEADER, 1, strlen( GENEFILE_HEADER ), pFile );
+	file << GENEFILE_HEADER << std::endl;
 
     // Write the generation count
-    {
-        char buff[80];
-        itoa( geneGeneration_, buff, 10 );
-        fwrite( buff, 1, strlen( buff ), pFile );
-    }
+	file << geneGeneration_ << std::endl;
 
     // For every layer
     GeneData::iterator neuronIt = data_.begin();
     for ( ; neuronIt != data_.end(); ++neuronIt )
     {
-        fwrite( GENEFILE_TOKEN_NEURON, 1, 1, pFile );
+		file << GENEFILE_TOKEN_NEURON;
         // For every dendrite
         Neuron::iterator dendriteIt = neuronIt->begin();
         for ( ; dendriteIt != neuronIt->end(); ++dendriteIt )
         {
-            fwrite( GENEFILE_TOKEN_DENDRITE, 1, 1, pFile );
-            char buff[80];
-            itoa( dendriteIt->first, buff, 10 );
-            fwrite( buff, 1, strlen( buff ), pFile );
-            fwrite( GENEFILE_TOKEN_COMMA, 1, 1, pFile );
-            itoa( dendriteIt->second, buff, 10 );
-            fwrite( buff, 1, strlen( buff ), pFile );
+			file << GENEFILE_TOKEN_DENDRITE << dendriteIt->first << "," << dendriteIt->second;
         }
     }
 
-    fclose( pFile );
+    file.close();
     return true;
 }
 
 bool NNGene::loadFromFile( std::wstring const& filename )
 {
     // =@!540!~!258!-123!~@!240!~!~!~!566=@!540!~@!~!566@!-800!12=@!540!12!~@!-800!~!566
-    FILE* pFile = _wfopen( filename.c_str(), L"rb" );
-    if ( NULL == pFile )
-    {
-        return false;
-    }
+	std::ifstream file;
+	file.open( filename );
 
-    // Validate that this is indeed a World 4 gene file.
-    char header[] = GENEFILE_HEADER;
-    // Read the header
-    fread( (void*)header, strlen(header), sizeof(char), pFile );
-    if ( strcmp( header, GENEFILE_HEADER ) != 0 )
+    if ( !file.is_open() )
+        return false;
+
+    // Validate that this is indeed a proper gene file.
+    std::string header;
+	std::getline(file, header);
+
+    if ( header != GENEFILE_HEADER )
     {
-        fclose( pFile );
+		assert(false);
+        file.close();
         return false;
     }
 
@@ -345,14 +334,7 @@ bool NNGene::loadFromFile( std::wstring const& filename )
     char buff[BUFFER_SIZE];
 
     // Read all bytes in the file.
-    std::string geneStr;
-    size_t bytesRead = fread( (void*)buff, 1, BUFFER_SIZE, pFile );
-    while ( bytesRead > 0 )
-    {
-        geneStr.append( buff, bytesRead );
-        bytesRead = fread( (void*)buff, 1, BUFFER_SIZE, pFile );
-    }
-    fclose( pFile );
+    std::string geneStr((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
     if ( ! createGeneData( geneStr ) )
     {
@@ -402,8 +384,8 @@ bool NNGene::createNeuron( Neuron& neuron, std::string const& str )
         }
         // Insert this dendrite.
         neuron.insert( std::make_pair(
-            atoi( dendriteData[0].c_str() ),
-            atoi( dendriteData[1].c_str() ) ) );
+            std::atoi( dendriteData[0].c_str() ),
+            std::atof( dendriteData[1].c_str() ) ) );
     }
     return true;
 }

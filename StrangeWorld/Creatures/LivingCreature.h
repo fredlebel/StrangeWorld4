@@ -4,7 +4,7 @@
 #include "Creature.h"
 #include <memory>
 
-class StrangeNeuralNetwork;
+class NeuralNetwork;
 class NNGene;
 
 class LivingCreature : public Creature
@@ -35,6 +35,7 @@ public:
         NNI_FB_EYE_RADIUS,  // Neural feedback - Radius of vision
         NNI_FB_FOCUS,       // Neural feedback - Angle between the eyes
         NNI_FB_BODY_RADIUS, // Neural feedback - Action
+		NNI_COUNT,
     };
 
     // Neural network output addresses
@@ -65,7 +66,7 @@ public:
     double bodyRadius_;		// Radius of vision for the eyes
 
 protected:
-    std::auto_ptr<StrangeNeuralNetwork> brain_;
+    std::auto_ptr<NeuralNetwork> brain_;
     std::auto_ptr<NNGene> gene_;
 
 public:

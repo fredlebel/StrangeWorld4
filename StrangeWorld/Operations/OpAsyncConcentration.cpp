@@ -1,11 +1,11 @@
-#include "Operations/OpConcentration.h"
+#include "Operations/OpAsyncConcentration.h"
 #include "Creatures/Carnivore.h"
 #include "Creatures/Herbivore.h"
 #include "Creatures/Grass.h"
 #include "MathAccel.h"
 
 
-// Function name   : OpConcentration::OpConcentration
+// Function name   : OpAsyncConcentration::OpAsyncConcentration
 // Description     : 
 // Return type     : 
 // Argument        : World* world
@@ -13,7 +13,7 @@
 // Argument        : int x
 // Argument        : int y
 // Argument        : int range
-OpConcentration::OpConcentration( World* world, Creature* ignore, double x, double y, double range )
+OpAsyncConcentration::OpAsyncConcentration( World* world, Creature* ignore, double x, double y, double range )
     : world_( world )
     , ignore_( ignore )
     , detectorX_( x )
@@ -28,19 +28,19 @@ OpConcentration::OpConcentration( World* world, Creature* ignore, double x, doub
 }
 
 
-// Function name   : OpConcentration::~OpConcentration
+// Function name   : OpAsyncConcentration::~OpAsyncConcentration
 // Description     : 
 // Return type     : 
-OpConcentration::~OpConcentration()
+OpAsyncConcentration::~OpAsyncConcentration()
 {
 }
 
 
-// Function name   : OpConcentration::getConcentration
+// Function name   : OpAsyncConcentration::getConcentration
 // Description     : 
 // Return type     : int 
 // Argument        : Creature* creature
-double OpConcentration::getConcentration( Creature* creature )
+double OpAsyncConcentration::getConcentration( Creature* creature )
 {
     if ( creature == ignore_ )
         return 0;
@@ -70,11 +70,11 @@ double OpConcentration::getConcentration( Creature* creature )
 }
 
 
-// Function name   : OpConcentration::visit_Carnivore
+// Function name   : OpAsyncConcentration::visit_Carnivore
 // Description     : 
 // Return type     : void 
 // Argument        : Carnivore* creature
-void OpConcentration::visit_Carnivore( Carnivore* creature )
+void OpAsyncConcentration::visit_Carnivore( Carnivore* creature )
 {
     double c = getConcentration( creature );
     if ( c > 0 )
@@ -82,11 +82,11 @@ void OpConcentration::visit_Carnivore( Carnivore* creature )
 }
 
 
-// Function name   : OpConcentration::visit_Grass
+// Function name   : OpAsyncConcentration::visit_Grass
 // Description     : 
 // Return type     : void 
 // Argument        : Grass* creature
-void OpConcentration::visit_Grass( Grass* creature )
+void OpAsyncConcentration::visit_Grass( Grass* creature )
 {
     double c = getConcentration( creature );
     if ( c > 0 )
@@ -96,11 +96,11 @@ void OpConcentration::visit_Grass( Grass* creature )
 }
 
 
-// Function name   : OpConcentration::visit_Herbivore
+// Function name   : OpAsyncConcentration::visit_Herbivore
 // Description     : 
 // Return type     : void 
 // Argument        : Herbivore* creature
-void OpConcentration::visit_Herbivore( Herbivore* creature )
+void OpAsyncConcentration::visit_Herbivore( Herbivore* creature )
 {
     double c = getConcentration( creature );
     if ( c > 0 )

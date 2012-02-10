@@ -37,21 +37,12 @@ private:
 
 	struct Neuron
 	{
-		Neuron() : out(0)
-		{
-		}
+		Neuron();
 
 		std::vector<Connection> ins;
 		double out;
 
-		void tick()
-		{
-			out = 0.0;
-			for (auto it = ins.begin(); it != ins.end(); ++it)
-			{
-				out += *(it->in) * it->bias;
-			}
-		}
+		void tick();
 	};
 
 	std::vector<Neuron> _neurons;

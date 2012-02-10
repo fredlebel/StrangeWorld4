@@ -60,20 +60,20 @@ void StrangeWindowsView::beginPaint(HDC dc)
 
 void StrangeWindowsView::endPaint()
 {
-    dc_ = NULL;
+    dc_ = nullptr;
 }
 
 int StrangeWindowsView::getWidth()
 {
     RECT rect;
-    GetWindowRect( hWnd_, &rect );
+    GetClientRect( hWnd_, &rect );
     return (rect.right - rect.left);
 }
 
 int StrangeWindowsView::getHeight()
 {
     RECT rect;
-    GetWindowRect(hWnd_, &rect);
+    GetClientRect(hWnd_, &rect);
     return (rect.bottom - rect.top);
 }
 
@@ -91,7 +91,7 @@ void StrangeWindowsView::drawCarnivore(
     Ellipse( dc_, x - r, y - r, x + r, y + r );
     if ( ! dead )
     {
-        MoveToEx( dc_, x, y, NULL );
+        MoveToEx( dc_, x, y, nullptr );
         LineTo( dc_, tx, ty );
     }
 
@@ -119,7 +119,7 @@ void StrangeWindowsView::drawHerbivore(
     Ellipse( dc_, x - r, y - r, x + r, y + r );
     if ( ! dead )
     {
-        MoveToEx( dc_, x, y, NULL );
+        MoveToEx( dc_, x, y, nullptr );
         LineTo( dc_, tx, ty );
     }
 
@@ -206,22 +206,22 @@ void StrangeWindowsView::beginPaint(HDC dc)
 
 void StrangeWindowsView::endPaint()
 {
-    dc_ = NULL;
+    dc_ = nullptr;
     delete graphics_;
-    graphics_ = NULL;
+    graphics_ = nullptr;
 }
 
 int StrangeWindowsView::getWidth()
 {
     RECT rect;
-    GetWindowRect( hWnd_, &rect );
+    GetClientRect( hWnd_, &rect );
     return (rect.right - rect.left);
 }
 
 int StrangeWindowsView::getHeight()
 {
     RECT rect;
-    GetWindowRect(hWnd_, &rect);
+    GetClientRect(hWnd_, &rect);
     return (rect.bottom - rect.top);
 }
 

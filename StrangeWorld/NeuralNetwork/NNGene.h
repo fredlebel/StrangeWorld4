@@ -27,7 +27,8 @@ public:
 
 public:
     typedef double Bias;
-    typedef std::map<double, Bias> Neuron;
+    typedef std::pair<int, Bias> Dendrite;
+    typedef std::vector<Dendrite> Neuron;
     typedef std::vector<Neuron> GeneData;
     GeneData data_;
 
@@ -35,6 +36,15 @@ private:
     bool loadFromFile( std::wstring const& filename );
     bool createGeneData( std::string const& str );
     bool createNeuron( Neuron& neuron, std::string const& str );
+    // Mutate functions
+    void mutate_tweakDendrite();
+    void mutate_invertBias();
+    void mutate_changeBias();
+    void mutate_addDendrite();
+    void mutate_removeDendrite();
+    void mutate_moveDendrite();
+    void mutate_addNeuron();
+    void mutate_removeNeuron();
 
 private:
     std::vector<std::string> splitToken( std::string const& str, std::string const& token );

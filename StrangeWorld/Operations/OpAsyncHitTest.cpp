@@ -1,11 +1,11 @@
-#include "OpHitTest.h"
+#include "OpAsyncHitTest.h"
 #include "Creatures/Carnivore.h"
 #include "Creatures/Herbivore.h"
 #include "Creatures/Grass.h"
 #include "MathAccel.h"
 
 
-// Function name   : OpHitTest::OpHitTest
+// Function name   : OpAsyncHitTest::OpAsyncHitTest
 // Description     : 
 // Return type     : 
 // Argument        : int x
@@ -13,7 +13,7 @@
 // Argument        : int width
 // Argument        : World* world
 // Argument        : Creature* ignore
-OpHitTest::OpHitTest( double x, double y, Creature* creature, WantToHit wth )
+OpAsyncHitTest::OpAsyncHitTest( double x, double y, Creature* creature, WantToHit wth )
     : creature_( creature )
     , creatureHit( 0 )
     , x_( x )
@@ -23,19 +23,19 @@ OpHitTest::OpHitTest( double x, double y, Creature* creature, WantToHit wth )
 }
 
 
-// Function name   : OpHitTest::~OpHitTest
+// Function name   : OpAsyncHitTest::~OpAsyncHitTest
 // Description     : 
 // Return type     : 
-OpHitTest::~OpHitTest()
+OpAsyncHitTest::~OpAsyncHitTest()
 {
 }
 
 
-// Function name   : OpHitTest::visit_creature
+// Function name   : OpAsyncHitTest::visit_creature
 // Description     : 
 // Return type     : void 
 // Argument        : Creature* creature
-void OpHitTest::checkHit( Creature* target, WantToHit hit )
+void OpAsyncHitTest::checkHit( Creature* target, WantToHit hit )
 {
     if ( creature_ == 0 )
     {
@@ -80,17 +80,17 @@ void OpHitTest::checkHit( Creature* target, WantToHit hit )
     }
 }
 
-void OpHitTest::visit_Carnivore( Carnivore* target )
+void OpAsyncHitTest::visit_Carnivore( Carnivore* target )
 {
     checkHit( target, HitCarnivore );
 }
 
-void OpHitTest::visit_Herbivore( Herbivore* target )
+void OpAsyncHitTest::visit_Herbivore( Herbivore* target )
 {
     checkHit( target, HitHerbivore );
 }
 
-void OpHitTest::visit_Grass( Grass* target )
+void OpAsyncHitTest::visit_Grass( Grass* target )
 {
     checkHit( target, HitGrass );
 }

@@ -1,5 +1,5 @@
 #include "Operations/OpTick.h"
-#include "Operations/OpHitTest.h"
+#include "Operations/OpAsyncHitTest.h"
 #include "Creatures/Carnivore.h"
 #include "Creatures/Herbivore.h"
 #include "Creatures/Grass.h"
@@ -9,10 +9,10 @@
 #include "FastRand.h"
 #include <assert.h>
 
-// Function name   : OperationCreatureTick::OperationCreatureTick
+// Function name   : OpTick::OpTick
 // Description     : 
 // Return type     : 
-OperationCreatureTick::OperationCreatureTick( World* world )
+OpTick::OpTick( World* world )
     : world_( world )
 {
     hurtCarnivore_ = (world_->getTickCount() % CARNIVORE_TICK_HURT) == 0;
@@ -20,36 +20,33 @@ OperationCreatureTick::OperationCreatureTick( World* world )
 }
 
 
-// Function name   : OperationCreatureTick::~OperationCreatureTick
+// Function name   : OpTick::~OpTick
 // Description     : 
 // Return type     : 
-OperationCreatureTick::~OperationCreatureTick()
+OpTick::~OpTick()
 {
 }
 
 
-// Function name   : OperationCreatureTick::basicPhase
+// Function name   : OpTick::basicPhase
 // Description     : 
 // Return type     : void 
 // Argument        : Operation* op
-void OperationCreatureTick::basicPhase( Operation* op,
+void OpTick::basicPhase( Operation* op,
                                        LivingCreature* creature,
-                                       OpHitTest::WantToHit wth )
+                                       OpAsyncHitTest::WantToHit wth )
 {
     creature->age();
 
     // Neural processing
-    creature->pushBrainInputs();
-    creature->tickBrain();
     double energyUsed = creature->popBrainOutputs();
     creature->hurt( energyUsed );
 
     if ( creature->isLiving() )
     {
         // Eating phase
-        Creature* c;
-        c = world_->checkContact( creature, wth );
-        if ( NULL != c )
+        Creature* c = world_->checkContact( creature, wth );
+        if ( nullptr != c )
         {
             c->accept( op );
         }
@@ -58,11 +55,11 @@ void OperationCreatureTick::basicPhase( Operation* op,
 
 
 
-// Function name   : OperationCreatureTick::visit_Carnivore
+// Function name   : OpTick::visit_Carnivore
 // Description     : 
 // Return type     : void 
 // Argument        : Carnivore* creature
-void OperationCreatureTick::visit_Carnivore( Carnivore* creature )
+void OpTick::visit_Carnivore( Carnivore* creature )
 {
     // Operation to eat
     class EatOperation : public Operation
@@ -101,7 +98,7 @@ void OperationCreatureTick::visit_Carnivore( Carnivore* creature )
                     NNGene* geneCol = new NNGene( creature_->getGene() );
                     // Elitism can speed up evolution
 #ifdef USE_ELITISM
-                    if ( NULL != Carnivore::ourEliteGene )
+                    if ( nullptr != Carnivore::ourEliteGene )
                         geneCol->merge( Carnivore::ourEliteGene );
 #endif
                     geneCol->mutate();
@@ -124,7 +121,7 @@ void OperationCreatureTick::visit_Carnivore( Carnivore* creature )
     {
         static EatOperation op( creature, world_ );
         op.creature_ = creature;
-        basicPhase( &op, creature, OpHitTest::HitHerbivore );
+        basicPhase( &op, creature, OpAsyncHitTest::HitHerbivore );
 
         if ( hurtCarnivore_ )
             creature->hurt( 1 );
@@ -136,11 +133,11 @@ void OperationCreatureTick::visit_Carnivore( Carnivore* creature )
 }
 
 
-// Function name   : OperationCreatureTick::visit_Grass
+// Function name   : OpTick::visit_Grass
 // Description     : 
 // Return type     : void 
 // Argument        : Grass* creature
-void OperationCreatureTick::visit_Grass( Grass* creature )
+void OpTick::visit_Grass( Grass* creature )
 {
 //    // Grass heals constantly
 //    if ( creature->isLiving() )
@@ -148,11 +145,11 @@ void OperationCreatureTick::visit_Grass( Grass* creature )
 }
 
 
-// Function name   : OperationCreatureTick::visit_Herbivore
+// Function name   : OpTick::visit_Herbivore
 // Description     : 
 // Return type     : void 
 // Argument        : Herbivore* creature
-void OperationCreatureTick::visit_Herbivore( Herbivore* creature )
+void OpTick::visit_Herbivore( Herbivore* creature )
 {
     // Operation to eat
     class EatOperation : public Operation
@@ -184,7 +181,7 @@ void OperationCreatureTick::visit_Herbivore( Herbivore* creature )
                     NNGene* geneCol = new NNGene( creature_->getGene() );
                     // Elitism can speed up evolution
 #ifdef USE_ELITISM
-                    if ( NULL != Herbivore::ourEliteGene )
+                    if ( nullptr != Herbivore::ourEliteGene )
                         geneCol->merge( Herbivore::ourEliteGene );
 #endif
                     geneCol->mutate();
@@ -207,7 +204,7 @@ void OperationCreatureTick::visit_Herbivore( Herbivore* creature )
     {
         static EatOperation op( creature, world_ );
         op.creature_ = creature;
-        basicPhase( &op, creature, OpHitTest::HitGrass );
+        basicPhase( &op, creature, OpAsyncHitTest::HitGrass );
 
         if ( hurtHerbivore_ )
             creature->hurt( 1 );

@@ -1,5 +1,5 @@
 #include "StrangeView.h"
-#include "Operations/OpConcentration.h"
+#include "Operations/OpAsyncConcentration.h"
 #include "Operations/OpRender.h"
 #include "Creatures/Carnivore.h"
 #include "Creatures/Herbivore.h"
@@ -105,8 +105,8 @@ void OperationCreatureRenderer::renderLivingCreature( LivingCreature* creature )
 
         if ( drawData_ )
         {
-            OpConcentration rc( creature->getWorld(), creature, vrx, vry, creature->eyeRadius_ );
-            OpConcentration lc( creature->getWorld(), creature, vlx, vly, creature->eyeRadius_ );
+            OpAsyncConcentration rc( creature->getWorld(), creature, vrx, vry, creature->eyeRadius_ );
+            OpAsyncConcentration lc( creature->getWorld(), creature, vlx, vly, creature->eyeRadius_ );
 
             creature->getWorld()->globalOperation( &rc );
             creature->getWorld()->globalOperation( &lc );

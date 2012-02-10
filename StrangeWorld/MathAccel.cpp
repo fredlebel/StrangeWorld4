@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include "MathAccel.h"
 
-double* MathAccel::cosLookup = NULL;
-double* MathAccel::sinLookup = NULL;
-double* MathAccel::toRadLookup = NULL;
+double* MathAccel::cosLookup = nullptr;
+double* MathAccel::sinLookup = nullptr;
+double* MathAccel::toRadLookup = nullptr;
 #if defined( USE_SQRT_LOOKUP )
-double* MathAccel::sqrtTableLookup = NULL;
+double* MathAccel::sqrtTableLookup = nullptr;
 #endif

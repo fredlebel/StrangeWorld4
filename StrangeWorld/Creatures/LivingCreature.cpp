@@ -1,10 +1,11 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <iostream>
+#include <algorithm>
 #include "LivingCreature.h"
 #include "World.h"
 #include "NeuralNetwork/NeuralNetwork.h"
-#include "Operations/OpConcentration.h"
+#include "Operations/OpAsyncConcentration.h"
 #include "NeuralNetwork/NNGene.h"
 #include "MathAccel.h"
 #include "FastRand.h"
@@ -25,7 +26,7 @@ LivingCreature::LivingCreature( NNGene* aGene )
     , bodyRadius_( MIN_BODY_RADIUS )
 {
     // Construct the brain
-    if ( gene_.get() != NULL )
+    if ( gene_.get() != nullptr )
         brain_ = NeuralNetwork::buildFromGene( NNI_COUNT, gene_.get() );
 
 }
@@ -47,7 +48,6 @@ NNGene* LivingCreature::getGene()
     return gene_.get();
 }
 
-
 // Function name   : LivingCreature::tickBrain
 // Description     : 
 // Return type     : void 
@@ -67,23 +67,23 @@ void LivingCreature::pushBrainInputs()
     double rx = x_ + MathAccel::cos( angle_ - eyeAngle_ ) * eyeRadius_;
     double ry = y_ - MathAccel::sin( angle_ - eyeAngle_ ) * eyeRadius_;
     
-    OpConcentration lc( world_, this, lx, ly, eyeRadius_ );
-    OpConcentration rc( world_, this, rx, ry, eyeRadius_ );
+    OpAsyncConcentration lc( world_, this, lx, ly, eyeRadius_ );
+    OpAsyncConcentration rc( world_, this, rx, ry, eyeRadius_ );
 
     world_->globalOperation( &lc );
     world_->globalOperation( &rc );
 
-    brain_->push( NNI_L_CARN,       __min( lc.carnivoreConcentration,       1000.0 ) );
-    brain_->push( NNI_L_HERB,       __min( lc.herbivoreConcentration,       1000.0 ) );
-    brain_->push( NNI_L_GRAS,       __min( lc.grassConcentration,           1000.0 ) );
+    brain_->push( NNI_L_CARN,       std::min( lc.carnivoreConcentration / 1000.0, NeuralNetwork::BiasMax ) );
+    brain_->push( NNI_L_HERB,       std::min( lc.herbivoreConcentration / 1000.0, NeuralNetwork::BiasMax ) );
+    brain_->push( NNI_L_GRAS,       std::min( lc.grassConcentration		/ 1000.0, NeuralNetwork::BiasMax ) );
 
-    brain_->push( NNI_R_CARN,       __min( rc.carnivoreConcentration,       1000.0 ) );
-    brain_->push( NNI_R_HERB,       __min( rc.herbivoreConcentration,       1000.0 ) );
-    brain_->push( NNI_R_GRAS,       __min( rc.grassConcentration,           1000.0 ) );
+    brain_->push( NNI_R_CARN,       std::min( rc.carnivoreConcentration / 1000.0, NeuralNetwork::BiasMax ) );
+    brain_->push( NNI_R_HERB,       std::min( rc.herbivoreConcentration / 1000.0, NeuralNetwork::BiasMax ) );
+    brain_->push( NNI_R_GRAS,       std::min( rc.grassConcentration		/ 1000.0, NeuralNetwork::BiasMax ) );
 
-    brain_->push( NNI_HEALTH,       __min( health_, 1000 ) );
-    brain_->push( NNI_EYE_ANGLE,    eyeAngle_  * EYE_ANGLE_MULTIPLYER );
-    brain_->push( NNI_EYE_RADIUS,   eyeRadius_ * EYE_RADIUS_MULTIPLYER );
+    brain_->push( NNI_HEALTH,       std::min( health_ / 1000.0, NeuralNetwork::BiasMax ) );
+    brain_->push( NNI_EYE_ANGLE,    eyeAngle_  / MAX_EYE_ANGLE );
+    brain_->push( NNI_EYE_RADIUS,   eyeRadius_ / MAX_EYE_RADIUS );
 
     // Feedback of neural outputs
     brain_->push( NNI_FB_DISP,         brain_->pop( NNO_DISP ) );
@@ -102,21 +102,18 @@ double LivingCreature::popBrainOutputs()
 
     // Process displacement
     {
-        double value = brain_->pop( NNO_DISP );
-        assert( ( value <= 1000 ) && ( value >= -1000 ) );
-        // Positive version of the value
-        // energy used to move
-        // int eneryUsed = (int)( pvalue / 80 );
+        double value;
         // Process the x translation
-		value *= MathAccel::cos( angle_ ) / 100;
+        value = brain_->pop( NNO_DISP );
+        value *= MathAccel::cos( angle_ ) * 10.0;
         x_ += value;
-		energyused += std::abs(value);
+        energyused += std::abs(value);
         
         // Process the y translation
         value = brain_->pop( NNO_DISP );
-		value *= MathAccel::sin( angle_ ) / 100;
+        value *= MathAccel::sin( angle_ ) * 10.0;
         y_ -= value;
-		energyused += std::abs(value);
+        energyused += std::abs(value);
 
         // Wrap coordinates
         world_->wrapXY( x_, y_ );
@@ -126,42 +123,42 @@ double LivingCreature::popBrainOutputs()
     {
         double value = brain_->pop( NNO_ROTA );
 
-		angle_ += value / 100;
-		energyused += std::abs(value) / 1000;
+        angle_ += value * 10.0;
+        energyused += std::abs(value);
 
-		if (angle_ > 360) angle_ -= 360;
-		if (angle_ < 0) angle_ += 360;
+        if (angle_ > 360) angle_ -= 360;
+        if (angle_ < 0) angle_ += 360;
     }
     
     // Process vision radius
     {
         double value = brain_->pop( NNO_EYE_RADIUS );
 
-		eyeRadius_ += value / 50;
+        eyeRadius_ += value * 10;
 
         // Limit eye radius
-        eyeRadius_ = __min( eyeRadius_, MAX_EYE_RADIUS );
-        eyeRadius_ = __max( eyeRadius_, MIN_EYE_RADIUS );
+        eyeRadius_ = std::min( eyeRadius_, MAX_EYE_RADIUS );
+        eyeRadius_ = std::max( eyeRadius_, MIN_EYE_RADIUS );
     }
 
     // Process eye angle
     {
         double value = brain_->pop( NNO_FOCUS );
-		eyeAngle_ += value / 50;
+        eyeAngle_ += value * 10;
 
         // Limit eye angle
-        eyeAngle_ = __min( eyeAngle_, MAX_EYE_ANGLE );
-        eyeAngle_ = __max( eyeAngle_, MIN_EYE_ANGLE );
+        eyeAngle_ = std::min( eyeAngle_, MAX_EYE_ANGLE );
+        eyeAngle_ = std::max( eyeAngle_, MIN_EYE_ANGLE );
     }
 
     // Process body radius
     {
         double value = brain_->pop( NNO_BODY_RADIUS );
-		bodyRadius_ += value / 500;
+        bodyRadius_ += value * 2;
 
         // Limit eye radius
-        bodyRadius_ = __min( bodyRadius_, MAX_BODY_RADIUS );
-        bodyRadius_ = __max( bodyRadius_, MIN_BODY_RADIUS );
+        bodyRadius_ = std::min( bodyRadius_, MAX_BODY_RADIUS );
+        bodyRadius_ = std::max( bodyRadius_, MIN_BODY_RADIUS );
     }
 
     energyused /= 2;

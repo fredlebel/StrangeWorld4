@@ -95,8 +95,9 @@
     <ClInclude Include="..\StrangeWorld\MathAccel.h" />
     <ClInclude Include="..\StrangeWorld\NeuralNetwork\NeuralNetwork.h" />
     <ClInclude Include="..\StrangeWorld\NeuralNetwork\NNGene.h" />
-    <ClInclude Include="..\StrangeWorld\Operations\OpConcentration.h" />
-    <ClInclude Include="..\StrangeWorld\Operations\OpHitTest.h" />
+    <ClInclude Include="..\StrangeWorld\Operations\OpAsyncPreTick.h" />
+    <ClInclude Include="..\StrangeWorld\Operations\OpAsyncConcentration.h" />
+    <ClInclude Include="..\StrangeWorld\Operations\OpAsyncHitTest.h" />
     <ClInclude Include="..\StrangeWorld\Operations\OpRender.h" />
     <ClInclude Include="..\StrangeWorld\Operations\OpTick.h" />
     <ClInclude Include="..\StrangeWorld\Operations\Operation.h" />
@@ -116,8 +117,9 @@
     <ClCompile Include="..\StrangeWorld\MathAccel.cpp" />
     <ClCompile Include="..\StrangeWorld\NeuralNetwork\NeuralNetwork.cpp" />
     <ClCompile Include="..\StrangeWorld\NeuralNetwork\NNGene.cpp" />
-    <ClCompile Include="..\StrangeWorld\Operations\OpConcentration.cpp" />
-    <ClCompile Include="..\StrangeWorld\Operations\OpHitTest.cpp" />
+    <ClCompile Include="..\StrangeWorld\Operations\OpAsyncPreTick.cpp" />
+    <ClCompile Include="..\StrangeWorld\Operations\OpAsyncConcentration.cpp" />
+    <ClCompile Include="..\StrangeWorld\Operations\OpAsyncHitTest.cpp" />
     <ClCompile Include="..\StrangeWorld\Operations\OpRender.cpp" />
     <ClCompile Include="..\StrangeWorld\Operations\OpTick.cpp" />
     <ClCompile Include="..\StrangeWorld\Operations\Operation.cpp" />

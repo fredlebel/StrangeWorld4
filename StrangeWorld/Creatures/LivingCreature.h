@@ -73,7 +73,9 @@ public:
     LivingCreature( NNGene* aGene );
     virtual ~LivingCreature();
 
+
     NNGene* getGene();
+
     void tickBrain();
     void pushBrainInputs();
     // Returns energy used

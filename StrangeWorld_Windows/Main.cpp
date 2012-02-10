@@ -6,7 +6,7 @@
 #include "Creatures/Herbivore.h"
 #include "Creatures/Grass.h"
 #include "Operations/OpRender.h"
-#include "Operations/OpHitTest.h"
+#include "Operations/OpAsyncHitTest.h"
 #include "NeuralNetwork/NNGene.h"
 #include "NeuralNetwork/NeuralNetwork.h"
 #include "MathAccel.h"
@@ -37,11 +37,11 @@ HICON trayIcon;
 bool gDrawSensors = false;
 bool gDrawData = false;
 
-World* gWorld = NULL;
-StrangeWindowsView* gView = NULL;
+World* gWorld = nullptr;
+StrangeWindowsView* gView = nullptr;
 
-static HDC backBufferDC = NULL;
-static HBITMAP backBufferBitmap = NULL;
+static HDC backBufferDC = nullptr;
+static HBITMAP backBufferBitmap = nullptr;
 
 enum RenderState { eFAST, eNORMAL, ePAUSE, eONESTEP };
 
@@ -69,7 +69,7 @@ void Tick()
             tickDone = true;
     case ePAUSE:
         {
-            if ( NULL == backBufferDC )
+            if ( nullptr == backBufferDC )
             {
                 backBufferDC = CreateCompatibleDC( dc );
                 backBufferBitmap = CreateCompatibleBitmap( dc, WORLD_WIDTH, WORLD_HEIGHT );
@@ -94,9 +94,9 @@ void Tick()
     // Every 250,000 iterations save the elite genes in case the program crashes
     if ( ( gWorld->getTickCount() % 250000 ) == 0 )
     {
-        if ( Carnivore::ourEliteGene.get() != NULL )
+        if ( Carnivore::ourEliteGene.get() != nullptr )
             Carnivore::ourEliteGene->saveGene( CARNIVORE_GENEFILE );
-        if ( Herbivore::ourEliteGene.get() != NULL )
+        if ( Herbivore::ourEliteGene.get() != nullptr )
             Herbivore::ourEliteGene->saveGene( HERBIVORE_GENEFILE );
     }
 
@@ -107,7 +107,7 @@ void Tick()
     {
         static unsigned int generationDumpInterval = 10000;
 
-        if ( Carnivore::ourEliteGene.get() != NULL )
+        if ( Carnivore::ourEliteGene.get() != nullptr )
         {
             int currentGeneration = Carnivore::ourEliteGene->getGeneration();
             if ( nextCarnivoreGenerationDump == 0 )
@@ -122,7 +122,7 @@ void Tick()
             }
         }
 
-        if ( Herbivore::ourEliteGene.get() != NULL )
+        if ( Herbivore::ourEliteGene.get() != nullptr )
         {
             int currentGeneration = Herbivore::ourEliteGene->getGeneration();
             if ( nextHerbivoreGenerationDump == 0 )
@@ -158,12 +158,12 @@ void Tick()
     {
         wchar_t buff[200];
         wsprintf(buff, APPLICATION_NAME L" - %i - Carnivore:(g:%i/%i-a:%i-s:%i-f:%i) Herbivore:(g:%i/%i-a:%i-s:%i-f:%i) Mutation(%i)", gWorld->getTickCount(),
-            ( Carnivore::ourEliteGene.get() != NULL ? Carnivore::ourEliteGene->getGeneration() : 0 ),
+            ( Carnivore::ourEliteGene.get() != nullptr ? Carnivore::ourEliteGene->getGeneration() : 0 ),
             nextCarnivoreGenerationDump,
             Carnivore::ourAverageAge,
             Carnivore::ourAverageSpawnCount,
             Carnivore::ourAverageFeedCount,
-            ( Herbivore::ourEliteGene.get() != NULL ? Herbivore::ourEliteGene->getGeneration() : 0 ),
+            ( Herbivore::ourEliteGene.get() != nullptr ? Herbivore::ourEliteGene->getGeneration() : 0 ),
             nextHerbivoreGenerationDump,
             Herbivore::ourAverageAge,
             Herbivore::ourAverageSpawnCount,
@@ -191,7 +191,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE prev, LPSTR cmd, int show)
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR           gdiplusToken;
     // Initialize GDI+.
-    Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+    Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, nullptr);
 #endif
 
     MathAccel::init();
@@ -208,10 +208,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE prev, LPSTR cmd, int show)
     wc.cbClsExtra       = 0;
     wc.cbWndExtra       = 0;
     wc.hInstance        = theMainInstance;
-    wc.hIcon            = NULL;
-    wc.hCursor          = LoadCursor(NULL, IDC_ARROW);
-    wc.hbrBackground    = NULL;
-    wc.lpszMenuName     = NULL;
+    wc.hIcon            = nullptr;
+    wc.hCursor          = LoadCursor(nullptr, IDC_ARROW);
+    wc.hbrBackground    = nullptr;
+    wc.lpszMenuName     = nullptr;
     wc.lpszClassName    = L"StrangeWorld5";
 
     RegisterClass(&wc);
@@ -221,8 +221,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE prev, LPSTR cmd, int show)
     theMainWindow = CreateWindow( 
         L"StrangeWorld5", APPLICATION_NAME, 
         WS_VISIBLE | WS_OVERLAPPEDWINDOW,
-        100, 100, wndRect.right, wndRect.bottom,
-        NULL, NULL, theMainInstance, NULL);
+        100, 100, wndRect.right - wndRect.left, wndRect.bottom - wndRect.top,
+        nullptr, nullptr, theMainInstance, nullptr);
 
     MSG msg = {0};
     do
@@ -321,10 +321,10 @@ LRESULT CALLBACK MainWndProc( HWND theWnd, UINT theMsg, WPARAM wParam, LPARAM lP
         {
             int xPos = LOWORD( lParam );
             int yPos = HIWORD( lParam );
-            OpHitTest hittestOp( xPos, yPos );
+            OpAsyncHitTest hittestOp( xPos, yPos );
             gWorld->globalOperation( &hittestOp );
             gWorld->toggleCreatureSelection( hittestOp.creatureHit );
-            InvalidateRect( theWnd, NULL, FALSE );
+            InvalidateRect( theWnd, nullptr, FALSE );
         } break;
     case WM_RBUTTONDOWN:
         {
@@ -360,7 +360,7 @@ LRESULT CALLBACK MainWndProc( HWND theWnd, UINT theMsg, WPARAM wParam, LPARAM lP
                     gCurrentState = eNORMAL;
                 else
                     gCurrentState = eFAST;
-                InvalidateRect( theWnd, NULL, FALSE );
+                InvalidateRect( theWnd, nullptr, FALSE );
             }
             if ( wParam == 's' )
             {
@@ -379,7 +379,7 @@ LRESULT CALLBACK MainWndProc( HWND theWnd, UINT theMsg, WPARAM wParam, LPARAM lP
                     gDrawData = false;
                 }
 
-                InvalidateRect( theWnd, NULL, FALSE );
+                InvalidateRect( theWnd, nullptr, FALSE );
             }
             else if ( wParam >= '0' && wParam <= '9' )
             {
@@ -388,12 +388,12 @@ LRESULT CALLBACK MainWndProc( HWND theWnd, UINT theMsg, WPARAM wParam, LPARAM lP
             else if ( wParam == 'c' )
             {
                 gWorld->clearAllSelection();
-                InvalidateRect( theWnd, NULL, FALSE );
+                InvalidateRect( theWnd, nullptr, FALSE );
             }
             else if ( wParam == 'a' )
             {
                 gWorld->selectionAll();
-                InvalidateRect( theWnd, NULL, FALSE );
+                InvalidateRect( theWnd, nullptr, FALSE );
             }
             else if ( wParam == 'A' )
             {
@@ -401,9 +401,9 @@ LRESULT CALLBACK MainWndProc( HWND theWnd, UINT theMsg, WPARAM wParam, LPARAM lP
             }
             else if ( wParam == 'w' )
             {
-                if (Carnivore::ourEliteGene.get() != NULL)
+                if (Carnivore::ourEliteGene.get() != nullptr)
                     Carnivore::ourEliteGene->saveGene( CARNIVORE_GENEFILE );
-                if (Herbivore::ourEliteGene.get() != NULL)
+                if (Herbivore::ourEliteGene.get() != nullptr)
                     Herbivore::ourEliteGene->saveGene( HERBIVORE_GENEFILE );
             }
             else if ( wParam == 'R' )
@@ -411,22 +411,22 @@ LRESULT CALLBACK MainWndProc( HWND theWnd, UINT theMsg, WPARAM wParam, LPARAM lP
                 // Resize back to normal size.
                 RECT wndRect;
                 GetDefaultWindowSize(&wndRect);
-                SetWindowPos(theWnd, NULL, 0, 0, wndRect.right, wndRect.bottom, SWP_NOMOVE|SWP_NOZORDER);
+                SetWindowPos(theWnd, nullptr, 0, 0, wndRect.right - wndRect.left, wndRect.bottom - wndRect.top, SWP_NOMOVE|SWP_NOZORDER);
             }
 
         } break;
     case WM_CLOSE:
         {
-            if (Carnivore::ourEliteGene.get() != NULL)
+            if (Carnivore::ourEliteGene.get() != nullptr)
                 Carnivore::ourEliteGene->saveGene( CARNIVORE_GENEFILE );
-            if (Herbivore::ourEliteGene.get() != NULL)
+            if (Herbivore::ourEliteGene.get() != nullptr)
                 Herbivore::ourEliteGene->saveGene( HERBIVORE_GENEFILE );
 
             DestroyIcon(trayIcon);
             NOTIFYICONDATA iconData;
             iconData.cbSize = sizeof(NOTIFYICONDATA);
             iconData.hWnd = theWnd;
-            iconData.uFlags = NULL;
+            iconData.uFlags = 0;
             iconData.uID = TRAYID;
             Shell_NotifyIcon(NIM_DELETE, &iconData);
 

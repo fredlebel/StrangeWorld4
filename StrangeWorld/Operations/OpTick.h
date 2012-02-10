@@ -2,18 +2,18 @@
 #define _OPERATIONCREATURETICK_H_INCLUDED_
 
 #include "Operations/Operation.h"
-#include "Operations/OpHitTest.h"
+#include "Operations/OpAsyncHitTest.h"
 
 class World;
 class LivingCreature;
 
-class OperationCreatureTick : public Operation
+class OpTick : public Operation
 {
 private:    // CTOR/DTOR
 protected:  // CTOR/DTOR
 public:     // CTOR/DTOR
-    OperationCreatureTick(World* world);
-    virtual ~OperationCreatureTick();
+    OpTick(World* world);
+    virtual ~OpTick();
 
 private:    // Attributes
 protected:  // Attributes
@@ -24,7 +24,7 @@ protected:  // Attributes
 public:     // Attributes
 
 private:    // Functions
-    void basicPhase(Operation* op, LivingCreature* creature, OpHitTest::WantToHit wth);
+    void basicPhase(Operation* op, LivingCreature* creature, OpAsyncHitTest::WantToHit wth);
 protected:  // Functions
 public:     // Functions
     virtual void visit_Carnivore(Carnivore* creature);

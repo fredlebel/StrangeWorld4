@@ -10,7 +10,7 @@
 // Return type     : 
 Creature::Creature()
     : isAlive_( true )
-    , world_( NULL )
+    , world_( nullptr )
     , age_( 0 )
     , health_( 500 )
     , x_( -1 ), y_( -1 )

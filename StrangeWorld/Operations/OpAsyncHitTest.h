@@ -1,9 +1,9 @@
-#ifndef _OPERATIONCREATUREHITTEST_H_INCLUDED_
-#define _OPERATIONCREATUREHITTEST_H_INCLUDED_
+#ifndef _OpAsyncHitTest_H_INCLUDED_
+#define _OpAsyncHitTest_H_INCLUDED_
 
 #include "Operation.h"
 
-class OpHitTest 
+class OpAsyncHitTest 
     : public Operation
 {
 private:    // CTOR/DTOR
@@ -16,8 +16,8 @@ public:     // CTOR/DTOR
         HitCarnivore,
         HitGrass
     };
-    OpHitTest( double x, double y, Creature* creature = 0, WantToHit wth = HitAll );
-    virtual ~OpHitTest();
+    OpAsyncHitTest( double x, double y, Creature* creature = 0, WantToHit wth = HitAll );
+    virtual ~OpAsyncHitTest();
 
 private:    // Attributes
 protected:  // Attributes
@@ -37,4 +37,4 @@ public:     // Functions
     virtual void visit_Herbivore(Herbivore* creature);
 };
 
-#endif //_OPERATIONCREATUREHITTEST_H_INCLUDED_
+#endif //_OpAsyncHitTest_H_INCLUDED_

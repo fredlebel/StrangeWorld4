@@ -1,6 +1,7 @@
 #include "World.h"
 #include "Creatures/Creature.h"
 #include "Operations/Operation.h"
+#include "Operations/OpAsyncPreTick.h"
 #include "Operations/OpTick.h"
 #include "Operations/OpRender.h"
 #include "Creatures/Grass.h"
@@ -9,7 +10,6 @@
 #include "NeuralNetwork/NNGene.h"
 #include "StrangeView.h"
 #include "FastRand.h"
-
 
 // Function name   : World::World
 // Description     : 
@@ -31,7 +31,7 @@ World::World( int width, int height, int growthRate )
 World::~World()
 {
     // Delete all creatures
-    for ( CreatureIterator i = creatureList_.begin(); i != creatureList_.end(); ++i )
+    for ( CreatureList::iterator i = creatureList_.begin(); i != creatureList_.end(); ++i )
     {
         Creature* pCreature = *i;
         delete pCreature;
@@ -87,15 +87,6 @@ int World::getHeight()
 }
 
 
-// Function name   : World::getCreatureIterator
-// Description     : 
-// Return type     : World::CreatureIterator 
-World::CreatureIterator World::getCreatureIterator()
-{
-    return creatureList_.begin();
-}
-
-
 // Function name   : World::tick
 // Description     : 
 // Return type     : void 
@@ -103,17 +94,25 @@ void World::tick()
 {
     ++tickCount_;
     // Tick all creatures in the list
-    OperationCreatureTick op( this );
-    globalOperation( &op );
+    {
+        // This operation can be run across multiple threads.
+        OpAsyncPreTick op( this );
+        globalOperation( &op );
+    }
+    {
+        OpTick op( this );
+        globalOperation( &op );
+    }
 
     // Remove all the dead creatures from the list
-    CreatureIterator i = creatureList_.begin();
+#if 0
+    CreatureList::iterator i = creatureList_.begin();
     while ( i != creatureList_.end() )
     {
         Creature* creature = *i;
         if ( creature->getHealth() == 0 )
         {
-            CreatureIterator deadCreature = i++;
+            CreatureList::iterator deadCreature = i++;
             creatureList_.erase( deadCreature );
             delete creature;
         }
@@ -122,33 +121,33 @@ void World::tick()
             ++i;
         }
     }
-    /*
-    int j;
-    if ( 0 == Carnivore::CREATURE_COUNT && ( NULL != Carnivore::ourEliteGene ) )
-        for ( j = 0; j < 10; ++j )
+#else
+    CreatureList::iterator i = creatureList_.begin();
+    while ( i != creatureList_.end() )
+    {
+        Creature* creature = *i;
+        if ( creature->getHealth() == 0 )
         {
-            NNGene* pGene = Carnivore::ourEliteGene->cloneGene();
-            pGene->mutate();
-            addCreature( new Carnivore( pGene ), true );
+            creatureList_.erase( i );
+            delete creature;
+            i = creatureList_.begin();
         }
-    if ( 0 == Herbivore::CREATURE_COUNT && ( NULL != Herbivore::ourEliteGene ) )
-        for ( j = 0; j < 10; ++j )
+        else
         {
-            NNGene* pGene = Herbivore::ourEliteGene->cloneGene();
-            pGene->mutate();
-            addCreature( new Herbivore( pGene ), true );
+            ++i;
         }
-    */
+    }
+#endif
 
     // Check for extinctions
-    while ( Carnivore::CREATURE_COUNT < 15 && ( Carnivore::ourEliteGene.get() != NULL ) )
+    while ( Carnivore::CREATURE_COUNT < 15 && ( Carnivore::ourEliteGene.get() != nullptr ) )
     {
         // Create based on the elite gene.
         NNGene* pGene = new NNGene( Carnivore::ourEliteGene.get() );
         pGene->mutate();
         addCreature( new Carnivore( pGene ), true );
     }
-    while ( Herbivore::CREATURE_COUNT < 15 && ( Herbivore::ourEliteGene.get() != NULL ) )
+    while ( Herbivore::CREATURE_COUNT < 15 && ( Herbivore::ourEliteGene.get() != nullptr ) )
     {
         NNGene* pGene = new NNGene( Herbivore::ourEliteGene.get() );
         pGene->mutate();
@@ -176,9 +175,9 @@ int World::creatureCount()
 // Description     : 
 // Return type     : Creature* 
 // Argument        : Creature* ignore
-Creature* World::checkContact( Creature* creature, OpHitTest::WantToHit wth )
+Creature* World::checkContact( Creature* creature, OpAsyncHitTest::WantToHit wth )
 {
-    OpHitTest op( creature->getX(), creature->getY(), creature, wth );
+    OpAsyncHitTest op( creature->getX(), creature->getY(), creature, wth );
     globalOperation( &op );
 
     return op.creatureHit;
@@ -192,8 +191,8 @@ Creature* World::checkContact( Creature* creature, OpHitTest::WantToHit wth )
 // Argument        : Operation* operation
 void World::globalOperation( Operation* operation )
 {
-    CreatureIterator i;
-    CreatureIterator endOfList = creatureList_.end();
+    CreatureList::iterator i;
+    CreatureList::iterator endOfList = creatureList_.end();
     for ( i = creatureList_.begin(); i != endOfList; ++i )
     {
         (*i)->accept( operation );
@@ -214,14 +213,14 @@ unsigned int World::getMutationLevel()
 
 void World::toggleCreatureSelection( Creature* creature )
 {
-    if ( creature != NULL )
+    if ( creature != nullptr )
         creature->selected_ = !creature->selected_;
 }
 
 void World::clearAllSelection()
 {
-    CreatureIterator i;
-    CreatureIterator endOfList = creatureList_.end();
+    CreatureList::iterator i;
+    CreatureList::iterator endOfList = creatureList_.end();
     for ( i = creatureList_.begin(); i != endOfList; ++i )
     {
         (*i)->selected_ = false;
@@ -230,8 +229,8 @@ void World::clearAllSelection()
 
 void World::selectionAll()
 {
-    CreatureIterator i;
-    CreatureIterator endOfList = creatureList_.end();
+    CreatureList::iterator i;
+    CreatureList::iterator endOfList = creatureList_.end();
     for ( i = creatureList_.begin(); i != endOfList; ++i )
     {
         (*i)->selected_ = true;

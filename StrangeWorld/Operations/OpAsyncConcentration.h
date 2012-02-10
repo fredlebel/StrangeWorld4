@@ -1,18 +1,18 @@
-#ifndef _OPERATIONCREATURECONCENTRATION_H_INCLUDED_
-#define _OPERATIONCREATURECONCENTRATION_H_INCLUDED_
+#ifndef _OpAsyncConcentration_H_INCLUDED_
+#define _OpAsyncConcentration_H_INCLUDED_
 
 #include "Operation.h"
 class World;
 class Creature;
 
-class OpConcentration
+class OpAsyncConcentration
     : public Operation
 {
 private:    // CTOR/DTOR
 protected:  // CTOR/DTOR
 public:     // CTOR/DTOR
-    OpConcentration( World* world, Creature* ignore, double x, double y, double range );
-    virtual ~OpConcentration();
+    OpAsyncConcentration( World* world, Creature* ignore, double x, double y, double range );
+    virtual ~OpAsyncConcentration();
 
 private:    // Attributes
 protected:  // Attributes
@@ -37,4 +37,4 @@ public:     // Functions
     virtual void visit_Herbivore( Herbivore* creature );
 };
 
-#endif //_OPERATIONCREATURECONCENTRATION_H_INCLUDED_
+#endif //_OpAsyncConcentration_H_INCLUDED_

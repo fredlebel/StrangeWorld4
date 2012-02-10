@@ -1,8 +1,8 @@
 #ifndef _STRANGEWORLD_H_INCLUDED_
 #define _STRANGEWORLD_H_INCLUDED_
 
-#include <list>
-#include "Operations/OpHitTest.h"
+#include <vector>
+#include "Operations/OpAsyncHitTest.h"
 
 class Creature;
 class Operation;
@@ -11,8 +11,7 @@ class StrangeView;
 class World
 {
 public:
-    typedef std::list<Creature*>::iterator CreatureIterator;
-    typedef std::list<Creature*> CreatureList;
+    typedef std::vector<Creature*> CreatureList;
 
     int growthRate_;
 
@@ -30,7 +29,6 @@ public:
     void addCreature( Creature* creature, bool autopos = false );
     int getWidth();
     int getHeight();
-    CreatureIterator getCreatureIterator();
     void tick();
     int creatureCount();
     inline void wrapXY( double& x, double &y )
@@ -45,7 +43,7 @@ public:
         while ( y >= height_ )
             y -= height_;
     }
-    Creature* checkContact( Creature* creature, OpHitTest::WantToHit wth );
+    Creature* checkContact( Creature* creature, OpAsyncHitTest::WantToHit wth );
     void globalOperation( Operation* operation );
 
     /** Level from '0' to '9' */

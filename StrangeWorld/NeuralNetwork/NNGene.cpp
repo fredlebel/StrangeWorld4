@@ -62,6 +62,7 @@ void NNGene::mutate()
         mutate_tweakDendrite();
     }
 
+#if 0
     // Once in a while, inverse a value
     if ( ( randomMT() % MUTATION_BIAS_INVERSE ) < (globalMutationLevel-1) && !data_.empty() )
     {
@@ -73,13 +74,15 @@ void NNGene::mutate()
     {
         mutate_changeBias();
     }
+#endif
 
 #if !defined( USE_STATIC_NEURALNET )
 
     // Once in a while, remove/add a dendrite
     if ( ( randomMT() % MUTATION_BIAS_ADDREM ) < (globalMutationLevel-1) && !data_.empty() )
     {
-        if ( randomMT() & 0x00000001 ) // Half the time add a dendrite
+        //if ( randomMT() & 0x00000001 ) // Half the time add a dendrite
+        if ( randomMT() % 4 )
         {
             mutate_addDendrite();
         }
@@ -89,11 +92,13 @@ void NNGene::mutate()
         }
     }
 
+#if 0
     // Reconnect a dendrite to a different neuron
     if ( ( randomMT() % MUTATION_BIAS_MOVE ) < (globalMutationLevel-1) && !data_.empty() )
     {
         mutate_moveDendrite();
     }
+#endif
 
     // Add/Remove a neuron.
     if ( ( randomMT() % MUTATION_NEURON_ADDREM ) < (globalMutationLevel-1) )
@@ -109,6 +114,19 @@ void NNGene::mutate()
         }
     }
 #endif
+}
+
+int NNGene::pickRandomSynapse()
+{
+    int neuralNetworkInputCount = LivingCreature::NNI_COUNT;
+    // Random neuron, don't forget to include the input neurons.
+    // *3 to increase the odds of connecting internally.
+    int ret = (randomMT() % (data_.size() * 3 + neuralNetworkInputCount)) - neuralNetworkInputCount;
+
+    if (ret >= 0)
+        ret %= neuralNetworkInputCount;
+
+    return ret;
 }
 
 void NNGene::mutate_tweakDendrite()
@@ -189,9 +207,7 @@ void NNGene::mutate_addDendrite()
     Neuron& neuron  = data_[ randomMT() % data_.size() ];
 
     // Random neuron, don't forget to include the input neurons.
-    int targetNeuronIndex =
-        (randomMT() % (data_.size() + neuralNetworkInputCount))
-        - neuralNetworkInputCount;
+    int targetNeuronIndex = pickRandomSynapse();
 
     // Pick a random value.
     double granularity = 1000 * NeuralNetwork::BiasMax;
@@ -227,9 +243,7 @@ void NNGene::mutate_moveDendrite()
         // Erase the dendrite
         neuron.erase( dendriteIt );
         // Random neuron, don't forget to include the input neurons.
-        int targetNeuronIndex =
-            (randomMT() % (data_.size() + neuralNetworkInputCount))
-            - neuralNetworkInputCount;
+        int targetNeuronIndex = pickRandomSynapse();
         // Insert the new dendrite
         neuron.push_back(std::make_pair( targetNeuronIndex, value ) );
     }

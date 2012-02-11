@@ -30,10 +30,10 @@
 
 #define MUTATION_BIAS_SOFT         200 // Small changes to the bias
 // Bigger numbers indicate rarer mutations.
-#define MUTATION_BIAS_INVERSE    10000 // A dendrite value is inversed
-#define MUTATION_BIAS_ADDREM     10000 // A dendrite is added/removed
-#define MUTATION_BIAS_CHANGE     20000 // A dendrite value is randomized
-#define MUTATION_BIAS_MOVE       20000 // A dendrite is reconnected to another neuron.
+//#define MUTATION_BIAS_INVERSE    10000 // A dendrite value is inversed
+#define MUTATION_BIAS_ADDREM      2500 // A dendrite is added/removed
+//#define MUTATION_BIAS_CHANGE     20000 // A dendrite value is randomized
+//#define MUTATION_BIAS_MOVE       20000 // A dendrite is reconnected to another neuron.
 #define MUTATION_NEURON_ADDREM   60000 // A neuron is added/removed
 
 

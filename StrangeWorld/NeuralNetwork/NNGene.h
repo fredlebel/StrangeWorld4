@@ -45,6 +45,7 @@ private:
     void mutate_moveDendrite();
     void mutate_addNeuron();
     void mutate_removeNeuron();
+    int pickRandomSynapse();
 
 private:
     std::vector<std::string> splitToken( std::string const& str, std::string const& token );

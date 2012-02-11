@@ -189,7 +189,7 @@ void World::tick()
     while ( Grass::CREATURE_COUNT < growthRate_ )
         addCreature( new Grass(), true );
 #else
-    if ( ( tickCount_ % 20 == 0 ) && ( Grass::CREATURE_COUNT < growthRate_ ) )
+    if ( ( tickCount_ % 40 == 0 ) && ( Grass::CREATURE_COUNT < growthRate_ ) )
         addCreature( new Grass(), true );
 #endif
 }

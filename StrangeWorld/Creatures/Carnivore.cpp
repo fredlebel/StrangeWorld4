@@ -1,7 +1,9 @@
 #include "Carnivore.h"
 #include "Operations/Operation.h"
+#include "Operations/OpAsyncHitTest.h"
 #include "NeuralNetwork/NNGene.h"
 #include "WorldSettings.h"
+#include "World.h"
 
 int Carnivore::CREATURE_COUNT       = 0;
 int Carnivore::ourAverageAge        = 0;
@@ -93,4 +95,10 @@ void Carnivore::die()
     ++ourDeathCount;
 }
 
+void Carnivore::checkContact()
+{
+    OpAsyncHitTest op( getX(), getY(), this, OpAsyncHitTest::HitHerbivore );
+    world_->globalOperation( &op );
+    _contact = op.creatureHit;
+}
 

@@ -35,7 +35,7 @@ public:
         NNI_FB_EYE_RADIUS,  // Neural feedback - Radius of vision
         NNI_FB_FOCUS,       // Neural feedback - Angle between the eyes
         NNI_FB_BODY_RADIUS, // Neural feedback - Action
-		NNI_COUNT,
+        NNI_COUNT,
     };
 
     // Neural network output addresses
@@ -63,11 +63,12 @@ public:
     double angle_;          // Angle the creature is pointing
     double eyeRadius_;      // Radius of vision for the eyes
     double eyeAngle_;       // Angle between both eyes
-    double bodyRadius_;		// Radius of vision for the eyes
+    double bodyRadius_;     // Radius of vision for the eyes
 
 protected:
     std::auto_ptr<NeuralNetwork> brain_;
     std::auto_ptr<NNGene> gene_;
+    Creature* _contact;
 
 public:
     LivingCreature( NNGene* aGene );
@@ -78,6 +79,9 @@ public:
 
     void tickBrain();
     void pushBrainInputs();
+    virtual void checkContact() = 0;
+    Creature* getContact();
+
     // Returns energy used
     double popBrainOutputs();
 };

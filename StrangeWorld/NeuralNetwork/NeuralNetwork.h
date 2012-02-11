@@ -9,44 +9,44 @@ class NNGene;
 class NeuralNetwork
 {
 public:
-	static std::auto_ptr<NeuralNetwork> buildFromGene( int inputCount, NNGene* gene );
-	static double BiasMin;
-	static double BiasMax;
+    static std::auto_ptr<NeuralNetwork> buildFromGene( int inputCount, NNGene* gene );
+    static double BiasMin;
+    static double BiasMax;
 
-	NeuralNetwork(int neuronCount, int inputCount);
+    NeuralNetwork(int neuronCount, int inputCount);
 
-	void connectIn(int fromIndex, int toIndex, double bias);
-	void connectOut(int fromIndex, int toIndex, double bias);
+    void connectIn(int fromIndex, int toIndex, double bias);
+    void connectOut(int fromIndex, int toIndex, double bias);
 
-	void push (int index, double value);
-	double pop(int index);
+    void push (int index, double value);
+    double pop(int index);
 
-	void tick();
+    void tick();
 
 private:
-	struct Connection
-	{
-		Connection(double* i, double b)
-			: in(i)
-			, bias(b)
-		{
-		}
-		double* in;
-		double bias;
-	};
+    struct Connection
+    {
+        Connection(double* i, double b)
+            : in(i)
+            , bias(b)
+        {
+        }
+        double* in;
+        double bias;
+    };
 
-	struct Neuron
-	{
-		Neuron();
+    struct Neuron
+    {
+        Neuron();
 
-		std::vector<Connection> ins;
-		double out;
+        std::vector<Connection> ins;
+        double out;
 
-		void tick();
-	};
+        void tick();
+    };
 
-	std::vector<Neuron> _neurons;
-	std::vector<double> _inputs;
+    std::vector<Neuron> _neurons;
+    std::vector<double> _inputs;
 };
 
 

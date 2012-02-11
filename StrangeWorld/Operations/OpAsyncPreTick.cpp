@@ -16,18 +16,19 @@ OpAsyncPreTick::OpAsyncPreTick( World* world )
 
 void OpAsyncPreTick::pushAndTickBrain( LivingCreature* creature )
 {
-	creature->pushBrainInputs();
-	creature->tickBrain();
+    creature->pushBrainInputs();
+    creature->tickBrain();
+    creature->checkContact();
 }
 
 void OpAsyncPreTick::visit_Carnivore( Carnivore* creature )
 {
-	pushAndTickBrain( creature );
+    pushAndTickBrain( creature );
 }
 
 void OpAsyncPreTick::visit_Herbivore( Herbivore* creature )
 {
-	pushAndTickBrain( creature );
+    pushAndTickBrain( creature );
 }
 
 

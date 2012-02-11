@@ -45,10 +45,9 @@ void OpTick::basicPhase( Operation* op,
     if ( creature->isLiving() )
     {
         // Eating phase
-        Creature* c = world_->checkContact( creature, wth );
-        if ( nullptr != c )
+        if ( creature->getContact() != nullptr )
         {
-            c->accept( op );
+            creature->getContact()->accept( op );
         }
     }
 }

@@ -15,7 +15,7 @@
 // Argument        : Creature* ignore
 OpAsyncHitTest::OpAsyncHitTest( double x, double y, Creature* creature, WantToHit wth )
     : creature_( creature )
-    , creatureHit( 0 )
+    , creatureHit( nullptr )
     , x_( x )
     , y_( y )
     , wth_( wth )

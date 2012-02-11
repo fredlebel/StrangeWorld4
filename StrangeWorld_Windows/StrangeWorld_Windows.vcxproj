@@ -47,7 +47,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\NeuralNetwork;..\StrangeWorld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;../StrangeWorld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -67,7 +67,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\NeuralNetwork;..\StrangeWorld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;../StrangeWorld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -75,6 +75,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <AdditionalDependencies>Gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -92,6 +93,7 @@
     <ClInclude Include="..\StrangeWorld\Creatures\Herbivore.h" />
     <ClInclude Include="..\StrangeWorld\Creatures\LivingCreature.h" />
     <ClInclude Include="..\StrangeWorld\FastRand.h" />
+    <ClInclude Include="..\StrangeWorld\IThread.h" />
     <ClInclude Include="..\StrangeWorld\MathAccel.h" />
     <ClInclude Include="..\StrangeWorld\NeuralNetwork\NeuralNetwork.h" />
     <ClInclude Include="..\StrangeWorld\NeuralNetwork\NNGene.h" />
@@ -106,6 +108,7 @@
     <ClInclude Include="..\StrangeWorld\WorldSettings.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="StrangeWindowsView.h" />
+    <ClInclude Include="WinThread.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\StrangeWorld\Creatures\Carnivore.cpp" />
@@ -126,6 +129,7 @@
     <ClCompile Include="..\StrangeWorld\World.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="StrangeWindowsView.cpp" />
+    <ClCompile Include="WinThread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="StrangeWorld_Windows.rc" />

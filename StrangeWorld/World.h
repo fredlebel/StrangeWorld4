@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "Operations/OpAsyncHitTest.h"
+#include "IThread.h"
 
 class Creature;
 class Operation;
@@ -20,9 +21,11 @@ private:
     int height_;
     unsigned int tickCount_;
     CreatureList creatureList_;
+    CreatureList _creaturesToAdd;
+    std::vector<IThread*> _workerThreads;
 
 public:
-    World( int width, int height, int growthRate );
+    World( int width, int height, std::vector<IThread*> workerThreads );
     virtual ~World();
     
     unsigned int getTickCount();

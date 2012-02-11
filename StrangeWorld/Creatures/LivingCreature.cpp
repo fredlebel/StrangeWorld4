@@ -24,6 +24,7 @@ LivingCreature::LivingCreature( NNGene* aGene )
     , eyeRadius_( 50 )
     , eyeAngle_( 45 )
     , bodyRadius_( MIN_BODY_RADIUS )
+    , _contact( nullptr )
 {
     // Construct the brain
     if ( gene_.get() != nullptr )
@@ -56,6 +57,10 @@ void LivingCreature::tickBrain()
     brain_->tick();
 }
 
+Creature* LivingCreature::getContact()
+{
+    return _contact;
+}
 
 // Function name   : LivingCreature::pushBrainInputs
 // Description     : 
@@ -75,11 +80,11 @@ void LivingCreature::pushBrainInputs()
 
     brain_->push( NNI_L_CARN,       std::min( lc.carnivoreConcentration / 1000.0, NeuralNetwork::BiasMax ) );
     brain_->push( NNI_L_HERB,       std::min( lc.herbivoreConcentration / 1000.0, NeuralNetwork::BiasMax ) );
-    brain_->push( NNI_L_GRAS,       std::min( lc.grassConcentration		/ 1000.0, NeuralNetwork::BiasMax ) );
+    brain_->push( NNI_L_GRAS,       std::min( lc.grassConcentration     / 1000.0, NeuralNetwork::BiasMax ) );
 
     brain_->push( NNI_R_CARN,       std::min( rc.carnivoreConcentration / 1000.0, NeuralNetwork::BiasMax ) );
     brain_->push( NNI_R_HERB,       std::min( rc.herbivoreConcentration / 1000.0, NeuralNetwork::BiasMax ) );
-    brain_->push( NNI_R_GRAS,       std::min( rc.grassConcentration		/ 1000.0, NeuralNetwork::BiasMax ) );
+    brain_->push( NNI_R_GRAS,       std::min( rc.grassConcentration     / 1000.0, NeuralNetwork::BiasMax ) );
 
     brain_->push( NNI_HEALTH,       std::min( health_ / 1000.0, NeuralNetwork::BiasMax ) );
     brain_->push( NNI_EYE_ANGLE,    eyeAngle_  / MAX_EYE_ANGLE );

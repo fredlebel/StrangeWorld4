@@ -1,16 +1,17 @@
 #include <windows.h>
 
 #include "StrangeWindowsView.h"
-#include "World.h"
-#include "Creatures/Carnivore.h"
-#include "Creatures/Herbivore.h"
-#include "Creatures/Grass.h"
-#include "Operations/OpRender.h"
-#include "Operations/OpAsyncHitTest.h"
-#include "NeuralNetwork/NNGene.h"
-#include "NeuralNetwork/NeuralNetwork.h"
-#include "MathAccel.h"
-#include "FastRand.h"
+#include "WinThread.h"
+#include "StrangeWorld/World.h"
+#include "StrangeWorld/Creatures/Carnivore.h"
+#include "StrangeWorld/Creatures/Herbivore.h"
+#include "StrangeWorld/Creatures/Grass.h"
+#include "StrangeWorld/Operations/OpRender.h"
+#include "StrangeWorld/Operations/OpAsyncHitTest.h"
+#include "StrangeWorld/NeuralNetwork/NNGene.h"
+#include "StrangeWorld/NeuralNetwork/NeuralNetwork.h"
+#include "StrangeWorld/MathAccel.h"
+#include "StrangeWorld/FastRand.h"
 #include "resource.h"
 #include "time.h"
 
@@ -28,7 +29,6 @@ LRESULT CALLBACK MainWndProc(HWND theWnd, UINT theMsg, WPARAM wParam, LPARAM lPa
 
 #define WORLD_WIDTH     1024
 #define WORLD_HEIGHT    768
-#define GROWTH_RATE     50 // Number of food on screen
 
 #define TRAYNOTIFY          3000
 #define TRAYID              3000
@@ -39,6 +39,7 @@ bool gDrawData = false;
 
 World* gWorld = nullptr;
 StrangeWindowsView* gView = nullptr;
+std::vector<IThread*> gWorkerThreads;
 
 static HDC backBufferDC = nullptr;
 static HBITMAP backBufferBitmap = nullptr;
@@ -198,6 +199,11 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE prev, LPSTR cmd, int show)
     srand( (unsigned int)time( 0 ) );
     seedMT( (unsigned int)time( 0 ) );
 
+    gWorkerThreads.push_back( new WinThread() );
+    gWorkerThreads.push_back( new WinThread() );
+    gWorkerThreads.push_back( new WinThread() );
+    gWorkerThreads.push_back( new WinThread() );
+
     SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
 
     theMainInstance = hInst;
@@ -288,7 +294,7 @@ LRESULT CALLBACK MainWndProc( HWND theWnd, UINT theMsg, WPARAM wParam, LPARAM lP
             gDrawSensors = false;
             gDrawData = false;
 
-            gWorld = new World( WORLD_WIDTH, WORLD_HEIGHT, GROWTH_RATE );
+            gWorld = new World( WORLD_WIDTH, WORLD_HEIGHT, gWorkerThreads );
             gView = new StrangeWindowsView( theWnd, gWorld );
 
             populateWorld<Carnivore>( CARNIVORE_GENEFILE );

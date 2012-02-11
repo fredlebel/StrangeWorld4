@@ -26,6 +26,7 @@ public:
     // Overloaded
     virtual double getRadius();
     virtual void die();
+    virtual void checkContact();
 
     virtual bool accept(Operation* operation);
 };

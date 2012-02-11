@@ -11,16 +11,12 @@
 #include "StrangeView.h"
 #include "FastRand.h"
 
-// Function name   : World::World
-// Description     : 
-// Return type     : 
-// Argument        : int width
-// Argument        : int height
-World::World( int width, int height, int growthRate )
+World::World( int width, int height, std::vector<IThread*> workerThreads )
     : width_( width )
     , height_( height )
     , tickCount_( 0 )
-    , growthRate_( growthRate )
+    , growthRate_( 50 )
+    , _workerThreads( workerThreads )
 {
 }
 
@@ -47,9 +43,8 @@ World::~World()
 // Argument        : bool autopos
 void World::addCreature( Creature* creature, bool autopos )
 {
-    creatureList_.push_back( creature );
-    creature->setWorld( this );
-    
+    _creaturesToAdd.push_back( creature );
+
     if ( autopos )
     {
         int r = randomMT() % width_;
@@ -93,12 +88,49 @@ int World::getHeight()
 void World::tick()
 {
     ++tickCount_;
+
+    // Start by adding all the new creatures
+    {
+        for ( auto it = _creaturesToAdd.begin(); it != _creaturesToAdd.end(); ++it )
+        {
+            creatureList_.push_back( *it );
+            (*it)->setWorld( this );
+        }
+        _creaturesToAdd.clear();
+    }
+
     // Tick all creatures in the list
+#if 0
     {
         // This operation can be run across multiple threads.
         OpAsyncPreTick op( this );
         globalOperation( &op );
     }
+#else
+    {
+        OpAsyncPreTick op( this );
+        // Spread the work over the worker threads.
+        for ( int threadIndex = 0; threadIndex < _workerThreads.size(); ++threadIndex )
+        {
+            _workerThreads[threadIndex]->run( [&op, this, threadIndex]()
+            {
+                int threadCount = this->_workerThreads.size();
+                for ( int i = 0; i < creatureList_.size(); ++i )
+                {
+                    // Thread aliasing to distribute the workload.
+                    if ( i % threadCount != threadIndex )
+                        continue;
+                    creatureList_[i]->accept( &op );
+                }
+            } );
+        }
+
+        for ( auto it = _workerThreads.begin(); it != _workerThreads.end(); ++it )
+        {
+            (*it)->waitUntilDone();
+        }
+    }
+#endif
     {
         OpTick op( this );
         globalOperation( &op );
@@ -170,20 +202,6 @@ int World::creatureCount()
 {
     return (int)creatureList_.size();
 }
-
-// Function name   : World::checkContact
-// Description     : 
-// Return type     : Creature* 
-// Argument        : Creature* ignore
-Creature* World::checkContact( Creature* creature, OpAsyncHitTest::WantToHit wth )
-{
-    OpAsyncHitTest op( creature->getX(), creature->getY(), creature, wth );
-    globalOperation( &op );
-
-    return op.creatureHit;
-
-}
-
 
 // Function name   : World::globalOperation
 // Description     : 

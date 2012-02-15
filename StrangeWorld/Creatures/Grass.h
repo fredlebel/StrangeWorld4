@@ -21,7 +21,7 @@ public:
     virtual double getRadius();
     virtual void die();
 
-    virtual bool accept(Operation* operation);
+    virtual bool accept(Operation& operation);
 };
 
 #endif // _STRANGEGRASS_H_INCLUDED_

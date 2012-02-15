@@ -1,35 +1,27 @@
-#ifndef _OPERATIONCREATURETICK_H_INCLUDED_
-#define _OPERATIONCREATURETICK_H_INCLUDED_
+#ifndef _OpTick_H_INCLUDED_
+#define _OpTick_H_INCLUDED_
 
 #include "Operations/Operation.h"
-#include "Operations/OpAsyncHitTest.h"
 
 class World;
 class LivingCreature;
 
 class OpTick : public Operation
 {
-private:    // CTOR/DTOR
-protected:  // CTOR/DTOR
-public:     // CTOR/DTOR
+public:
     OpTick(World* world);
     virtual ~OpTick();
 
-private:    // Attributes
-protected:  // Attributes
+private:
     World* world_;
     // Whether this time the creature loses one health
     bool hurtCarnivore_;
     bool hurtHerbivore_;
-public:     // Attributes
 
-private:    // Functions
-    void basicPhase(Operation* op, LivingCreature* creature, OpAsyncHitTest::WantToHit wth);
-protected:  // Functions
-public:     // Functions
+public:
     virtual void visit_Carnivore(Carnivore* creature);
     virtual void visit_Grass(Grass* creature);
     virtual void visit_Herbivore(Herbivore* creature);
 };
 
-#endif //_OPERATIONCREATURETICK_H_INCLUDED_
+#endif //_OpTick_H_INCLUDED_

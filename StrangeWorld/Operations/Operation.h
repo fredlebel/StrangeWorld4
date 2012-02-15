@@ -8,20 +8,14 @@ class Grass;
 
 class Operation
 {
-private:    // CTOR/DTOR
-protected:  // CTOR/DTOR
-public:     // CTOR/DTOR
+public:
     Operation();
     virtual ~Operation();
 
-private:    // Attributes
-protected:  // Attributes
-public:     // Attributes
+public:
     bool mustStop;
 
-private:    // Functions
-protected:  // Functions
-public:     // Functions
+public:
     virtual void visit_creature(Creature* creature);
 
     virtual void visit_Carnivore(Carnivore* creature);

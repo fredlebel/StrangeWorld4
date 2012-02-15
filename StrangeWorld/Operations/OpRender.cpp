@@ -108,8 +108,8 @@ void OperationCreatureRenderer::renderLivingCreature( LivingCreature* creature )
             OpAsyncConcentration rc( creature->getWorld(), creature, vrx, vry, creature->eyeRadius_ );
             OpAsyncConcentration lc( creature->getWorld(), creature, vlx, vly, creature->eyeRadius_ );
 
-            creature->getWorld()->globalOperation( &rc );
-            creature->getWorld()->globalOperation( &lc );
+            creature->getWorld()->runOperation( rc );
+            creature->getWorld()->runOperation( lc );
 
             {
                 wchar_t buff[80];

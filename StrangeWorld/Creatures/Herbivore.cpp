@@ -1,5 +1,6 @@
 #include "Operations/Operation.h"
-#include "Operations/OpAsyncHitTest.h"
+#include "CollisionDetection.h"
+#include "Grass.h"
 #include "Herbivore.h"
 #include "NeuralNetwork/NNGene.h"
 #include "WorldSettings.h"
@@ -19,7 +20,9 @@ std::auto_ptr<NNGene> Herbivore::ourEliteGene;
 // Description     : 
 // Return type     : 
 // Argument        : NNGene* aGene
-Herbivore::Herbivore( NNGene* aGene ) : LivingCreature( aGene )
+Herbivore::Herbivore( NNGene* aGene )
+    : LivingCreature( aGene )
+    , grassToEat( nullptr )
 {
     ++Herbivore::CREATURE_COUNT;
 }
@@ -38,9 +41,9 @@ Herbivore::~Herbivore()
 // Description     : 
 // Return type     : bool 
 // Argument        : Operation* operation
-bool Herbivore::accept( Operation* operation )
+bool Herbivore::accept( Operation& operation )
 {
-    operation->visit_Herbivore( this );
+    operation.visit_Herbivore( this );
     return true;
 }
 
@@ -95,9 +98,16 @@ void Herbivore::die()
     ++ourDeathCount;
 }
 
-void Herbivore::checkContact()
+void Herbivore::checkContactWithEdible()
 {
-    OpAsyncHitTest op( getX(), getY(), this, OpAsyncHitTest::HitGrass );
-    world_->globalOperation( &op );
-    _contact = op.creatureHit;
+    grassToEat = nullptr;
+    world_->operateOnGrass([&](Grass* c) -> bool
+    {
+        if ( collisionDetect( this, c ) )
+        {
+            grassToEat = c;
+            return false;
+        }
+        return true;
+    });
 }

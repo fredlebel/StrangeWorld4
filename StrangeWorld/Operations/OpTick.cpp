@@ -1,5 +1,4 @@
 #include "Operations/OpTick.h"
-#include "Operations/OpAsyncHitTest.h"
 #include "Creatures/Carnivore.h"
 #include "Creatures/Herbivore.h"
 #include "Creatures/Grass.h"
@@ -27,33 +26,6 @@ OpTick::~OpTick()
 {
 }
 
-
-// Function name   : OpTick::basicPhase
-// Description     : 
-// Return type     : void 
-// Argument        : Operation* op
-void OpTick::basicPhase( Operation* op,
-                                       LivingCreature* creature,
-                                       OpAsyncHitTest::WantToHit wth )
-{
-    creature->age();
-
-    // Neural processing
-    double energyUsed = creature->popBrainOutputs();
-    creature->hurt( energyUsed );
-
-    if ( creature->isLiving() )
-    {
-        // Eating phase
-        if ( creature->getContact() != nullptr )
-        {
-            creature->getContact()->accept( op );
-        }
-    }
-}
-
-
-
 // Function name   : OpTick::visit_Carnivore
 // Description     : 
 // Return type     : void 
@@ -61,66 +33,60 @@ void OpTick::basicPhase( Operation* op,
 void OpTick::visit_Carnivore( Carnivore* creature )
 {
     // Operation to eat
-    class EatOperation : public Operation
+    auto eatFn = [&](Herbivore* herbivore)
     {
-    public:
-        EatOperation( Carnivore* c, World* world )
-            : creature_( c )
-            , world_( world )
+        if ( herbivore->isLiving() )
         {
+            herbivore->kill();
+            return;
         }
 
-        virtual void visit_Herbivore( Herbivore* target )
+        // Feed on dead creature's corpse
+        creature->heal( herbivore->hurt( FEED_AMOUNT ) / 2 );
+        ++creature->feedCount_;
+
+        // If the creature is ready to spawn
+        if ( creature->getHealth() >= CARNIVORE_SPAWN_THRES &&
+                creature->getAge() > CARNIVORE_SPAWN_AGE_THRES &&
+                Carnivore::CREATURE_COUNT < 25 )
         {
-            if ( target->isLiving() )
+            // Spawning takes energy
+            creature->hurt( SPAWN_HURT * 2 );
+            creature->spawnCount_++;
+            double x = creature->getX();
+            double y = creature->getY();
+            for ( int i = 0; i < CARNIVORE_OFFSPRING_COUNT; ++i )
             {
-                target->kill();
-                return;
-            }
-
-            // Feed on dead creature's corpse
-            creature_->heal( target->hurt( FEED_AMOUNT ) / 2 );
-            ++creature_->feedCount_;
-
-            // If the creature is ready to spawn
-            if ( creature_->getHealth() >= CARNIVORE_SPAWN_THRES &&
-                 creature_->getAge() > CARNIVORE_SPAWN_AGE_THRES &&
-                 Carnivore::CREATURE_COUNT < 25 )
-            {
-                // Spawning takes energy
-                creature_->hurt( SPAWN_HURT * 2 );
-                creature_->spawnCount_++;
-                double x = creature_->getX();
-                double y = creature_->getY();
-                for ( int i = 0; i < CARNIVORE_OFFSPRING_COUNT; ++i )
-                {
-                    NNGene* geneCol = new NNGene( creature_->getGene() );
-                    // Elitism can speed up evolution
-#ifdef USE_ELITISM
-                    if ( nullptr != Carnivore::ourEliteGene )
-                        geneCol->merge( Carnivore::ourEliteGene );
-#endif
-                    geneCol->mutate();
-                    Carnivore* nc = new Carnivore( geneCol );
-                    // Propagate the selection to the offspring
-                    nc->selected_ = creature_->selected_;
-                    world_->addCreature( nc, false );
-                    // Place the new creature somewhere around the parent.
-                    nc->setX( x + (randomMT() % 40) - 20 );
-                    nc->setY( y + (randomMT() % 40) - 20 );
-                }
+                NNGene* geneCol = new NNGene( creature->getGene() );
+                // Elitism can speed up evolution
+                geneCol->mutate();
+                Carnivore* nc = new Carnivore( geneCol );
+                // Propagate the selection to the offspring
+                nc->selected_ = creature->selected_;
+                world_->addCreature( nc, false );
+                // Place the new creature somewhere around the parent.
+                nc->setX( x + (randomMT() % 40) - 20 );
+                nc->setY( y + (randomMT() % 40) - 20 );
             }
         }
-
-        Carnivore* creature_;
-        World* world_;
     };
 
     if ( creature->isLiving() )
     {
-        static EatOperation op( creature, world_ );
-        op.creature_ = creature;
-        basicPhase( &op, creature, OpAsyncHitTest::HitHerbivore );
+        creature->age();
+
+        // Neural processing
+        double energyUsed = creature->popBrainOutputs();
+        creature->hurt( energyUsed );
+
+        if ( creature->isLiving() )
+        {
+            // Eating phase
+            if ( creature->herbivoreToEat != nullptr )
+            {
+                eatFn( creature->herbivoreToEat );
+            }
+        }
 
         if ( hurtCarnivore_ )
             creature->hurt( 1 );
@@ -151,59 +117,52 @@ void OpTick::visit_Grass( Grass* creature )
 void OpTick::visit_Herbivore( Herbivore* creature )
 {
     // Operation to eat
-    class EatOperation : public Operation
+    auto eatFn = [&](Grass* grass)
     {
-    public:
-        EatOperation( Herbivore* c, World* world )
-            : creature_( c )
-            , world_( world )
-        {
-        }
+        // Feed on grass
+        creature->heal( grass->hurt( FEED_AMOUNT ) );
+        ++creature->feedCount_;
 
-        virtual void visit_Grass( Grass* target )
+        // If the creature is ready to spawn
+        if ( creature->getHealth() >= HERBIVORE_SPAWN_THRES &&
+                creature->getAge() > HERBIVORE_SPAWN_AGE_THRES )
         {
-            // Feed on grass
-            creature_->heal( target->hurt( FEED_AMOUNT ) );
-            ++creature_->feedCount_;
-
-            // If the creature is ready to spawn
-            if ( creature_->getHealth() >= HERBIVORE_SPAWN_THRES &&
-                 creature_->getAge() > HERBIVORE_SPAWN_AGE_THRES )
+            // Spawning takes energy
+            creature->hurt( SPAWN_HURT );
+            creature->spawnCount_++;
+            double x = creature->getX();
+            double y = creature->getY();
+            for ( int i = 0; i < HERBIVORE_OFFSPRING_COUNT; ++i )
             {
-                // Spawning takes energy
-                creature_->hurt( SPAWN_HURT );
-                creature_->spawnCount_++;
-                double x = creature_->getX();
-                double y = creature_->getY();
-                for ( int i = 0; i < HERBIVORE_OFFSPRING_COUNT; ++i )
-                {
-                    NNGene* geneCol = new NNGene( creature_->getGene() );
-                    // Elitism can speed up evolution
-#ifdef USE_ELITISM
-                    if ( nullptr != Herbivore::ourEliteGene )
-                        geneCol->merge( Herbivore::ourEliteGene );
-#endif
-                    geneCol->mutate();
-                    Herbivore* nc = new Herbivore( geneCol );
-                    // Propagate the selection to the offspring
-                    nc->selected_ = creature_->selected_;
-                    world_->addCreature( nc, false );
-                    // Place the new creature somewhere around the parent.
-                    nc->setX( x + (randomMT() % 40) - 20 );
-                    nc->setY( y + (randomMT() % 40) - 20 );
-                }
+                NNGene* geneCol = new NNGene( creature->getGene() );
+                geneCol->mutate();
+                Herbivore* nc = new Herbivore( geneCol );
+                // Propagate the selection to the offspring
+                nc->selected_ = creature->selected_;
+                world_->addCreature( nc, false );
+                // Place the new creature somewhere around the parent.
+                nc->setX( x + (randomMT() % 40) - 20 );
+                nc->setY( y + (randomMT() % 40) - 20 );
             }
         }
-
-        Herbivore* creature_;
-        World* world_;
     };
 
     if ( creature->isLiving() )
     {
-        static EatOperation op( creature, world_ );
-        op.creature_ = creature;
-        basicPhase( &op, creature, OpAsyncHitTest::HitGrass );
+        creature->age();
+
+        // Neural processing
+        double energyUsed = creature->popBrainOutputs();
+        creature->hurt( energyUsed );
+
+        if ( creature->isLiving() )
+        {
+            // Eating phase
+            if ( creature->grassToEat != nullptr )
+            {
+                eatFn( creature->grassToEat );
+            }
+        }
 
         if ( hurtHerbivore_ )
             creature->hurt( 1 );

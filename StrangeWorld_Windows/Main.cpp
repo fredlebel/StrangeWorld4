@@ -7,11 +7,11 @@
 #include "StrangeWorld/Creatures/Herbivore.h"
 #include "StrangeWorld/Creatures/Grass.h"
 #include "StrangeWorld/Operations/OpRender.h"
-#include "StrangeWorld/Operations/OpAsyncHitTest.h"
 #include "StrangeWorld/NeuralNetwork/NNGene.h"
 #include "StrangeWorld/NeuralNetwork/NeuralNetwork.h"
 #include "StrangeWorld/MathAccel.h"
 #include "StrangeWorld/FastRand.h"
+#include "StrangeWorld/CollisionDetection.h"
 #include "resource.h"
 #include "time.h"
 
@@ -327,9 +327,21 @@ LRESULT CALLBACK MainWndProc( HWND theWnd, UINT theMsg, WPARAM wParam, LPARAM lP
         {
             int xPos = LOWORD( lParam );
             int yPos = HIWORD( lParam );
-            OpAsyncHitTest hittestOp( xPos, yPos );
-            gWorld->globalOperation( &hittestOp );
-            gWorld->toggleCreatureSelection( hittestOp.creatureHit );
+
+            Creature* clickedCreature = nullptr;
+            auto hitTestFn = [&](Creature* c) -> bool
+            {
+                if ( hitTest( c, xPos, yPos ) )
+                {
+                    clickedCreature = c;
+                    return false;
+                }
+                return true;
+            };
+
+            gWorld->operateOnAll( hitTestFn );
+            if ( clickedCreature != nullptr )
+                gWorld->toggleCreatureSelection( clickedCreature );
             InvalidateRect( theWnd, nullptr, FALSE );
         } break;
     case WM_RBUTTONDOWN:

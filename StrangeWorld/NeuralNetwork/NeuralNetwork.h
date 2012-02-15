@@ -2,7 +2,6 @@
 #define _NeuralNetwork_h_included_
 
 #include <vector>
-#include <algorithm>
 
 class NNGene;
 

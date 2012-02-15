@@ -67,7 +67,7 @@ public:
     inline void setWorld( World* world ) { world_ = world; }
     inline int getAge() { return age_; }
 
-    virtual bool accept(Operation* operation) = 0;
+    virtual bool accept(Operation& operation) = 0;
     virtual double getRadius() = 0;
 
 protected:

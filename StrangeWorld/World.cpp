@@ -1,7 +1,6 @@
 #include "World.h"
 #include "Creatures/Creature.h"
 #include "Operations/Operation.h"
-#include "Operations/OpAsyncPreTick.h"
 #include "Operations/OpTick.h"
 #include "Operations/OpRender.h"
 #include "Creatures/Grass.h"
@@ -26,13 +25,6 @@ World::World( int width, int height, std::vector<IThread*> workerThreads )
 // Return type     : 
 World::~World()
 {
-    // Delete all creatures
-    for ( CreatureList::iterator i = creatureList_.begin(); i != creatureList_.end(); ++i )
-    {
-        Creature* pCreature = *i;
-        delete pCreature;
-    }
-    creatureList_.clear();
 }
 
 
@@ -44,6 +36,7 @@ World::~World()
 void World::addCreature( Creature* creature, bool autopos )
 {
     _creaturesToAdd.push_back( creature );
+    creature->setWorld( this );
 
     if ( autopos )
     {
@@ -91,10 +84,31 @@ void World::tick()
 
     // Start by adding all the new creatures
     {
+        class AddOp : public Operation
+        {
+        public:
+            AddOp( std::vector<std::unique_ptr<Grass>>* grasses,
+                   std::vector<std::unique_ptr<Herbivore>>* herbivores,
+                   std::vector<std::unique_ptr<Carnivore>>* carnivores )
+                : _grasses( grasses )
+                , _herbivores( herbivores )
+                , _carnivores( carnivores )
+            {
+            }
+
+            std::vector<std::unique_ptr<Grass>>* _grasses;
+            std::vector<std::unique_ptr<Herbivore>>* _herbivores;
+            std::vector<std::unique_ptr<Carnivore>>* _carnivores;
+
+            virtual void visit_Grass( Grass* c ) { _grasses->push_back( std::move( std::unique_ptr<Grass>(c) ) ); }
+            virtual void visit_Herbivore( Herbivore* c ) { _herbivores->push_back( std::move( std::unique_ptr<Herbivore>(c) ) ); }
+            virtual void visit_Carnivore( Carnivore* c ) { _carnivores->push_back( std::move( std::unique_ptr<Carnivore>(c) ) ); }
+        };
+
+        AddOp op( &_grasses, &_herbivores, &_carnivores );
         for ( auto it = _creaturesToAdd.begin(); it != _creaturesToAdd.end(); ++it )
         {
-            creatureList_.push_back( *it );
-            (*it)->setWorld( this );
+            (*it)->accept( op );
         }
         _creaturesToAdd.clear();
     }
@@ -108,19 +122,35 @@ void World::tick()
     }
 #else
     {
-        OpAsyncPreTick op( this );
-        // Spread the work over the worker threads.
-        for ( int threadIndex = 0; threadIndex < _workerThreads.size(); ++threadIndex )
+        auto asyncFn = [&](LivingCreature* c)
         {
-            _workerThreads[threadIndex]->run( [&op, this, threadIndex]()
+            c->pushBrainInputs();
+            c->tickBrain();
+            c->checkContactWithEdible();
+        };
+
+        // Spread the work over the worker threads.
+        for ( unsigned int threadIndex = 0; threadIndex < _workerThreads.size(); ++threadIndex )
+        {
+            _workerThreads[threadIndex]->run( [&asyncFn, threadIndex, this]()
             {
-                int threadCount = this->_workerThreads.size();
-                for ( int i = 0; i < creatureList_.size(); ++i )
+                int threadCount = _workerThreads.size();
+                // Herbivores
+                for ( unsigned int i = 0; i < _herbivores.size(); ++i )
                 {
                     // Thread aliasing to distribute the workload.
                     if ( i % threadCount != threadIndex )
                         continue;
-                    creatureList_[i]->accept( &op );
+                    asyncFn( _herbivores[i].get() );
+                }
+
+                // Carnivores
+                for ( unsigned int i = 0; i < _carnivores.size(); ++i )
+                {
+                    // Thread aliasing to distribute the workload.
+                    if ( i % threadCount != threadIndex )
+                        continue;
+                    asyncFn( _carnivores[i].get() );
                 }
             } );
         }
@@ -133,7 +163,7 @@ void World::tick()
 #endif
     {
         OpTick op( this );
-        globalOperation( &op );
+        runOperation( op );
     }
 
     // Remove all the dead creatures from the list
@@ -153,7 +183,21 @@ void World::tick()
             ++i;
         }
     }
+#elif 1
+    _grasses.erase(
+        std::remove_if( _grasses.begin(), _grasses.end(), [] (std::unique_ptr<Grass>& c) { return c->getHealth() == 0; } ),
+        _grasses.end());
+
+    _herbivores.erase(
+        std::remove_if( _herbivores.begin(), _herbivores.end(), [] (std::unique_ptr<Herbivore>& c) { return c->getHealth() == 0; } ),
+        _herbivores.end());
+
+    _carnivores.erase(
+        std::remove_if( _carnivores.begin(), _carnivores.end(), [] (std::unique_ptr<Carnivore>& c) { return c->getHealth() == 0; } ),
+        _carnivores.end());
+
 #else
+
     CreatureList::iterator i = creatureList_.begin();
     while ( i != creatureList_.end() )
     {
@@ -189,34 +233,86 @@ void World::tick()
     while ( Grass::CREATURE_COUNT < growthRate_ )
         addCreature( new Grass(), true );
 #else
-    if ( ( tickCount_ % 40 == 0 ) && ( Grass::CREATURE_COUNT < growthRate_ ) )
+    if ( ( tickCount_ % 80 == 0 ) && ( Grass::CREATURE_COUNT < growthRate_ ) )
         addCreature( new Grass(), true );
 #endif
 }
 
 
-// Function name   : World::creatureCount
-// Description     : 
-// Return type     : int 
-int World::creatureCount()
+void World::runOperation( Operation& operation )
 {
-    return (int)creatureList_.size();
+    operateOnGrass( [&](Grass* c) -> bool
+    {
+        c->accept( operation );
+        return !operation.mustStop;
+    });
+
+    if ( operation.mustStop )
+        return;
+
+    operateOnHerbivore( [&](Herbivore* c) -> bool
+    {
+        c->accept( operation );
+        return !operation.mustStop;
+    });
+
+    if ( operation.mustStop )
+        return;
+
+    operateOnCarnivore( [&](Carnivore* c) -> bool
+    {
+        if ( !operation.mustStop )
+            c->accept( operation );
+        return !operation.mustStop;
+    });
 }
 
-// Function name   : World::globalOperation
-// Description     : 
-// Return type     : void 
-// Argument        : Operation* operation
-void World::globalOperation( Operation* operation )
+bool World::operateOnGrass( std::function<bool(Grass*)> fn )
 {
-    CreatureList::iterator i;
-    CreatureList::iterator endOfList = creatureList_.end();
-    for ( i = creatureList_.begin(); i != endOfList; ++i )
+    for ( auto it = _grasses.begin(); it != _grasses.end(); ++it )
     {
-        (*i)->accept( operation );
-        if ( operation->mustStop )
-            break;
+        if ( ! fn( it->get() ) )
+            return false;
     }
+    return true;
+}
+
+bool World::operateOnHerbivore( std::function<bool(Herbivore*)> fn )
+{
+    for ( auto it = _herbivores.begin(); it != _herbivores.end(); ++it )
+    {
+        if ( ! fn( it->get() ) )
+            return false;
+    }
+    return true;
+}
+
+bool World::operateOnCarnivore( std::function<bool(Carnivore*)> fn )
+{
+    for ( auto it = _carnivores.begin(); it != _carnivores.end(); ++it )
+    {
+        if ( ! fn( it->get() ) )
+            return false;
+    }
+    return true;
+}
+
+bool World::operateOnAll( std::function<bool(Creature*)> fn )
+{
+    bool cont = operateOnGrass( fn );
+    if ( !cont ) return false;
+    cont = operateOnHerbivore( fn );
+    if ( !cont ) return false;
+    cont = operateOnCarnivore( fn );
+    return cont;
+}
+
+bool World::operateOnLivingCreature( std::function<bool(LivingCreature*)> fn )
+{
+    bool cont = operateOnHerbivore( fn );
+    if ( !cont ) return false;
+    cont = operateOnCarnivore( fn );
+    return cont;
 }
 
 void World::setMutationLevel( unsigned int level )
@@ -237,26 +333,24 @@ void World::toggleCreatureSelection( Creature* creature )
 
 void World::clearAllSelection()
 {
-    CreatureList::iterator i;
-    CreatureList::iterator endOfList = creatureList_.end();
-    for ( i = creatureList_.begin(); i != endOfList; ++i )
+    operateOnAll( [](Creature* c) -> bool
     {
-        (*i)->selected_ = false;
-    }
+        c->selected_ = false;
+        return true;
+    });
 }
 
 void World::selectionAll()
 {
-    CreatureList::iterator i;
-    CreatureList::iterator endOfList = creatureList_.end();
-    for ( i = creatureList_.begin(); i != endOfList; ++i )
+    operateOnAll( [](Creature* c) -> bool
     {
-        (*i)->selected_ = true;
-    }
+        c->selected_ = true;
+        return true;
+    });
 }
 
 void World::render( StrangeView* view, bool drawSensors, bool gDrawData )
 {
     OperationCreatureRenderer renderer( view, drawSensors, gDrawData );
-    globalOperation( &renderer );
+    runOperation( renderer );
 }

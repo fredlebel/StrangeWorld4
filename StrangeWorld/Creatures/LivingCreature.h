@@ -79,7 +79,7 @@ public:
 
     void tickBrain();
     void pushBrainInputs();
-    virtual void checkContact() = 0;
+    virtual void checkContactWithEdible() = 0;
     Creature* getContact();
 
     // Returns energy used

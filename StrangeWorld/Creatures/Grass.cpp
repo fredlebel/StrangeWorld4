@@ -70,8 +70,8 @@ void Grass::die()
 // Description     : 
 // Return type     : bool 
 // Argument        : Operation* operation
-bool Grass::accept( Operation* operation )
+bool Grass::accept( Operation& operation )
 {
-    operation->visit_Grass( this );
+    operation.visit_Grass( this );
     return true;
 }

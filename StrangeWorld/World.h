@@ -2,10 +2,15 @@
 #define _STRANGEWORLD_H_INCLUDED_
 
 #include <vector>
-#include "Operations/OpAsyncHitTest.h"
+#include <algorithm>
+#include <memory>
 #include "IThread.h"
 
 class Creature;
+class Grass;
+class Herbivore;
+class Carnivore;
+class LivingCreature;
 class Operation;
 class StrangeView;
 
@@ -20,8 +25,11 @@ private:
     int width_;
     int height_;
     unsigned int tickCount_;
-    CreatureList creatureList_;
-    CreatureList _creaturesToAdd;
+    std::vector<std::unique_ptr<Grass>> _grasses;
+    std::vector<std::unique_ptr<Herbivore>> _herbivores;
+    std::vector<std::unique_ptr<Carnivore>> _carnivores;
+
+    std::vector<Creature*> _creaturesToAdd;
     std::vector<IThread*> _workerThreads;
 
 public:
@@ -33,7 +41,6 @@ public:
     int getWidth();
     int getHeight();
     void tick();
-    int creatureCount();
     inline void wrapXY( double& x, double &y )
     {
         while ( x < 0 )
@@ -46,8 +53,14 @@ public:
         while ( y >= height_ )
             y -= height_;
     }
-    Creature* checkContact( Creature* creature, OpAsyncHitTest::WantToHit wth );
-    void globalOperation( Operation* operation );
+
+    void runOperation( Operation& operation );
+
+    bool operateOnGrass( std::function<bool(Grass*)> fn );
+    bool operateOnHerbivore( std::function<bool(Herbivore*)> fn );
+    bool operateOnCarnivore( std::function<bool(Carnivore*)> fn );
+    bool operateOnAll( std::function<bool(Creature*)> fn );
+    bool operateOnLivingCreature( std::function<bool(LivingCreature*)> fn );
 
     /** Level from '0' to '9' */
     static void setMutationLevel( unsigned int level );

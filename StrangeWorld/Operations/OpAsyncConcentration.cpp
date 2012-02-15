@@ -2,6 +2,7 @@
 #include "Creatures/Carnivore.h"
 #include "Creatures/Herbivore.h"
 #include "Creatures/Grass.h"
+#include "World.h"
 #include "MathAccel.h"
 
 

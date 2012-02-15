@@ -75,8 +75,8 @@ void LivingCreature::pushBrainInputs()
     OpAsyncConcentration lc( world_, this, lx, ly, eyeRadius_ );
     OpAsyncConcentration rc( world_, this, rx, ry, eyeRadius_ );
 
-    world_->globalOperation( &lc );
-    world_->globalOperation( &rc );
+    world_->runOperation( lc );
+    world_->runOperation( rc );
 
     brain_->push( NNI_L_CARN,       std::min( lc.carnivoreConcentration / 1000.0, NeuralNetwork::BiasMax ) );
     brain_->push( NNI_L_HERB,       std::min( lc.herbivoreConcentration / 1000.0, NeuralNetwork::BiasMax ) );

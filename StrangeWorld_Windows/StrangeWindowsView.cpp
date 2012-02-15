@@ -2,6 +2,8 @@
 #include "StrangeWindowsView.h"
 #include <vector>
 
+#pragma warning( disable : 4244 )
+
 static HFONT TextFont   = CreateFont( 10, 0, 0, 0, FW_NORMAL, 0, 0, 0, ANSI_CHARSET,
                                      OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
                                      DEFAULT_QUALITY, DEFAULT_PITCH, L"Lucida Console" );
@@ -83,7 +85,7 @@ void StrangeWindowsView::drawCarnivore(
     double health, bool selected, bool dead )
 {
     HBRUSH br = emptyBrush;
-    HPEN pen = gRedPensPastel[ max( health / 8, 0 ) ];
+    HPEN pen = gRedPensPastel[ max( (int)health / 8, 0 ) ];
 
     HBRUSH prevBrush = (HBRUSH)SelectObject( dc_, br );
     HPEN prevPen = (HPEN)SelectObject( dc_, pen );

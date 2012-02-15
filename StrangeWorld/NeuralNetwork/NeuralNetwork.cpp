@@ -1,6 +1,7 @@
 #include "NeuralNetwork.h"
 #include "NNGene.h"
 #include "WorldSettings.h"
+#include <algorithm>
 
 double NeuralNetwork::BiasMin = -1.0;
 double NeuralNetwork::BiasMax = 1.0;
@@ -100,12 +101,12 @@ void NeuralNetwork::Neuron::tick()
     }
 
     double tempOut = 0.0;
-    double biasSum = 0.0;
+//    double biasSum = 0.0;
 
     for (auto it = ins.begin(); it != ins.end(); ++it)
     {
         tempOut += *(it->in) * it->bias;
-        biasSum += it->bias;
+//        biasSum += it->bias;
     }
 
     //tempOut /= ins.size() * BiasMax;

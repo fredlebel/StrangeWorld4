@@ -81,8 +81,7 @@ void NNGene::mutate()
     // Once in a while, remove/add a dendrite
     if ( ( randomMT() % MUTATION_BIAS_ADDREM ) < (globalMutationLevel-1) && !data_.empty() )
     {
-        //if ( randomMT() & 0x00000001 ) // Half the time add a dendrite
-        if ( randomMT() % 4 )
+        if ( randomMT() & 0x00000001 ) // Half the time add a dendrite
         {
             mutate_addDendrite();
         }
@@ -103,8 +102,8 @@ void NNGene::mutate()
     // Add/Remove a neuron.
     if ( ( randomMT() % MUTATION_NEURON_ADDREM ) < (globalMutationLevel-1) )
     {
-//        if ( randomMT() & 0x00000001 ) // Half the time add a neuron.
-        if ( randomMT() % 4 )
+        if ( randomMT() & 0x00000001 ) // Half the time add a neuron.
+//        if ( randomMT() % 4 )
         {
             mutate_addNeuron();
         }
@@ -124,7 +123,7 @@ int NNGene::pickRandomSynapse()
     int ret = (randomMT() % (data_.size() * 3 + neuralNetworkInputCount)) - neuralNetworkInputCount;
 
     if (ret >= 0)
-        ret %= neuralNetworkInputCount;
+        ret %= data_.size();
 
     return ret;
 }
@@ -157,8 +156,8 @@ void NNGene::mutate_tweakDendrite()
     }
 #else
     // Scale by a specific range.
-    double minAdd = -0.1;
-    double maxAdd = +0.1;
+    double minAdd = -0.01;
+    double maxAdd = +0.01;
     double ganularity = 1000;
     int range = (int)((maxAdd - minAdd) * ganularity);
     double amount = (randomMT() % range) / ganularity + minAdd;
@@ -211,7 +210,7 @@ void NNGene::mutate_addDendrite()
 
     // Pick a random value.
     double granularity = 1000 * NeuralNetwork::BiasMax;
-    double value = (randomMT() % (int)(granularity*2)) / granularity - NeuralNetwork::BiasMax;
+    double value = 0.0;//(randomMT() % (int)(granularity*2)) / granularity - NeuralNetwork::BiasMax;
     neuron.push_back(std::make_pair( targetNeuronIndex, value ) );
 }
 
@@ -264,8 +263,8 @@ void NNGene::mutate_addNeuron()
     else
     {
         // Insert it in a random location
-        GeneData::iterator insertIt = data_.begin();
         int index = randomMT() % data_.size();
+        GeneData::iterator insertIt = data_.begin();
         std::advance( insertIt, index );
         data_.insert( insertIt, neuron );
 
@@ -298,11 +297,12 @@ void NNGene::mutate_addNeuron()
 
 void NNGene::mutate_removeNeuron()
 {
-    if ( ! data_.empty() ) // Remove a neuron.
+    // Never remove one of the output neurons
+    if ( data_.size() > LivingCreature::NNI_COUNT ) // Remove a neuron.
     {
         // Pick a random neuron to remove.
+        int index = randomMT() % (data_.size() - LivingCreature::NNI_COUNT);
         GeneData::iterator eraseIt = data_.begin();
-        int index = randomMT() % data_.size();
         std::advance( eraseIt, index );
         // And remove it.
         data_.erase( eraseIt );
@@ -392,9 +392,6 @@ bool NNGene::loadFromFile( std::wstring const& filename )
         file.close();
         return false;
     }
-
-    const int BUFFER_SIZE = 80;
-    char buff[BUFFER_SIZE];
 
     // Read all bytes in the file.
     std::string geneStr((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());

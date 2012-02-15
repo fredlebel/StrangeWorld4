@@ -7,6 +7,7 @@ class World;
 class Operation;
 class StrangeGene;
 class NNGene;
+class Herbivore;
 
 class Carnivore : public LivingCreature
 {
@@ -23,12 +24,14 @@ public:
     Carnivore(NNGene* aGene);
     virtual ~Carnivore();
     
+    Herbivore* herbivoreToEat;
+
     // Overloaded
     virtual double getRadius();
     virtual void die();
-    virtual void checkContact();
+    virtual void checkContactWithEdible();
 
-    virtual bool accept(Operation* operation);
+    virtual bool accept(Operation& operation);
 };
 
 #endif // _STRANGECARNIVORE_H_INCLUDED_

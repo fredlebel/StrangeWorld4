@@ -34,7 +34,7 @@
 #define MUTATION_BIAS_ADDREM      2500 // A dendrite is added/removed
 //#define MUTATION_BIAS_CHANGE     20000 // A dendrite value is randomized
 //#define MUTATION_BIAS_MOVE       20000 // A dendrite is reconnected to another neuron.
-#define MUTATION_NEURON_ADDREM   60000 // A neuron is added/removed
+#define MUTATION_NEURON_ADDREM   30000 // A neuron is added/removed
 
 
 #define GENEFILE_HEADER          "SW5 DNA FREE"
@@ -44,6 +44,6 @@
 
 // Used only when repopulating due to extinctions.
 #define ELITE_IS_OLDEST
-#define ELITE_IS_PROLIFIC
-#define ELITE_EATS_MOST
+//#define ELITE_IS_PROLIFIC
+//#define ELITE_EATS_MOST
 

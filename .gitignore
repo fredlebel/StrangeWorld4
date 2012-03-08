@@ -1,5 +1,4 @@
 Debug
-Release
 StrangeWorld_Windows/Debug
 StrangeWorld_Windows/Release
 *.ncb
@@ -11,5 +10,4 @@ StrangeWorld_Windows/Release
 StrangeWorld.opensdf
 StrangeWorld.sdf
 StrangeWorld_Windows/StrangeWorld_Windows.aps
-StrangeWorld_Windows/StrangeWorld_Windows.vcxproj.filters
 ipch

@@ -16,7 +16,7 @@ Three types of creatures:
                   Render left/right RGB inputs and current health.
 <0-9>         Change the rate of mutation.  0 = no mutation, 9 = max mutation.  Mutations occur only upon reproduction.
 
-Every 10000 generations a GEN4 file is created for herbivores and carnivores to save the state of the neural network at that time.
+Every 10000 generations a GEN5 file is created for herbivores and carnivores to save the state of the neural network at that time.
 
 Minimizing the window hides it to the system tray.  Clicking on the tray icon brings it back.  Closing the window saves the latest genes to file and exits.
 
@@ -32,18 +32,15 @@ IN: Right eye red color
 IN: Right eye green color
 IN: Right eye blue color
 IN: Current health
-IN: Current angle between eyes
 IN: Current radius of eyes
 IN: Feedback of last forward/backward displacement OUT 
 IN: Feedback of last rotation OUT
 IN: Feedback of last eye radius delta OUT
-IN: Feedback of last eye angle delta OUT
 IN: Feedback of last delta of body radius OUT
 
 OUT: Relative forward/backward movement
 OUT: Relative change in rotation
 OUT: Relative change in eye radius
-OUT: Relative change in eye angle
 OUT: Relative change in body radius
 
 === Results ===

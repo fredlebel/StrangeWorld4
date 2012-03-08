@@ -97,10 +97,10 @@ void OperationCreatureRenderer::renderLivingCreature( LivingCreature* creature )
 {
     if ( drawSensors_ && creature->selected_ && creature->isLiving() )
     {
-        int vrx = (int)( creature->getX() + MathAccel::cos( creature->angle_ - creature->eyeAngle_ ) * creature->eyeRadius_ );
-        int vry = (int)( creature->getY() - MathAccel::sin( creature->angle_ - creature->eyeAngle_ ) * creature->eyeRadius_ );
-        int vlx = (int)( creature->getX() + MathAccel::cos( creature->angle_ + creature->eyeAngle_ ) * creature->eyeRadius_ );
-        int vly = (int)( creature->getY() - MathAccel::sin( creature->angle_ + creature->eyeAngle_ ) * creature->eyeRadius_ );
+        int vrx = (int)( creature->getX() + MathAccel::cos( creature->angle_ - 45 ) * creature->eyeRadius_ );
+        int vry = (int)( creature->getY() - MathAccel::sin( creature->angle_ - 45 ) * creature->eyeRadius_ );
+        int vlx = (int)( creature->getX() + MathAccel::cos( creature->angle_ + 45 ) * creature->eyeRadius_ );
+        int vly = (int)( creature->getY() - MathAccel::sin( creature->angle_ + 45 ) * creature->eyeRadius_ );
         view_->drawSensors( vrx, vry, vlx, vly, creature->eyeRadius_ );
 
         if ( drawData_ )

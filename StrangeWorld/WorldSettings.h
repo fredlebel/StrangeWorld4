@@ -8,10 +8,6 @@
 
 #define MAX_EYE_RADIUS          150.0
 #define MIN_EYE_RADIUS           10.0
-#define EYE_RADIUS_MULTIPLYER     6.0     // 6 * 150 = 900, at close to 1000 as possible
-#define MAX_EYE_ANGLE            45.0
-#define MIN_EYE_ANGLE             0.0
-#define EYE_ANGLE_MULTIPLYER     10.0     // 10 * 90 = 900, at close to 1000 as possible
 #define FEED_AMOUNT              20.0     // How much energy is taken when feeding.
 #define MIN_BODY_RADIUS           2.0
 #define MAX_BODY_RADIUS          10.0

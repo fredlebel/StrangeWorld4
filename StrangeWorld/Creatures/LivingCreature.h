@@ -24,7 +24,6 @@ public:
 
         // Personal information
         NNI_HEALTH,         // Health
-        NNI_EYE_ANGLE,      // Angle between the eyes
         NNI_EYE_RADIUS,     // Radius of the eyes
 
         NNI_BODY_RADIUS,    // Radius of the body
@@ -33,7 +32,6 @@ public:
         NNI_FB_DISP,        // Neural feedback - Displacement
         NNI_FB_ROTA,        // Neural feedback - Rotation
         NNI_FB_EYE_RADIUS,  // Neural feedback - Radius of vision
-        NNI_FB_FOCUS,       // Neural feedback - Angle between the eyes
         NNI_FB_BODY_RADIUS, // Neural feedback - Action
         NNI_COUNT,
     };
@@ -43,17 +41,9 @@ public:
     { 
         NNO_DISP = 0,       // Displacement
         NNO_ROTA,           // Rotation
-        NNO_EYE_RADIUS,     // Radius of vision ( 150-0 )
-        NNO_FOCUS,          // Angle between the eyes ( 180-0 )
-        NNO_BODY_RADIUS,    // Radius of vision ( 150-0 )
+        NNO_EYE_RADIUS,     // Radius of vision
+        NNO_BODY_RADIUS,    // Radius of body
     };
-
-    // Displacement and angle resolution
-    enum { DISPLACEMENT_STEP_LEVEL  = 100 };
-    enum { ROTATION_STEP_LEVEL      = 100 };
-    enum { EYE_RADIUS_STEP_LEVEL    =  50 };
-    enum { EYEANGLE_STEP_LEVEL      =  50 };
-    enum { BODY_RADIUS_STEP_LEVEL   = 200 };
 
     // Counts the number of times the creature has spawned.
     int spawnCount_;
@@ -62,7 +52,6 @@ public:
 
     double angle_;          // Angle the creature is pointing
     double eyeRadius_;      // Radius of vision for the eyes
-    double eyeAngle_;       // Angle between both eyes
     double bodyRadius_;     // Radius of vision for the eyes
 
 protected:

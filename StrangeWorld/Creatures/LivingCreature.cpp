@@ -22,7 +22,6 @@ LivingCreature::LivingCreature( NNGene* aGene )
     , feedCount_( 0 )
     , angle_( randomMT() % 360 )
     , eyeRadius_( 50 )
-    , eyeAngle_( 45 )
     , bodyRadius_( MIN_BODY_RADIUS )
     , _contact( nullptr )
 {
@@ -67,10 +66,10 @@ Creature* LivingCreature::getContact()
 // Return type     : void 
 void LivingCreature::pushBrainInputs()
 {
-    double lx = x_ + MathAccel::cos( angle_ + eyeAngle_ ) * eyeRadius_;
-    double ly = y_ - MathAccel::sin( angle_ + eyeAngle_ ) * eyeRadius_;
-    double rx = x_ + MathAccel::cos( angle_ - eyeAngle_ ) * eyeRadius_;
-    double ry = y_ - MathAccel::sin( angle_ - eyeAngle_ ) * eyeRadius_;
+    double lx = x_ + MathAccel::cos( angle_ + 45 ) * eyeRadius_;
+    double ly = y_ - MathAccel::sin( angle_ + 45 ) * eyeRadius_;
+    double rx = x_ + MathAccel::cos( angle_ - 45 ) * eyeRadius_;
+    double ry = y_ - MathAccel::sin( angle_ - 45 ) * eyeRadius_;
     
     OpAsyncConcentration lc( world_, this, lx, ly, eyeRadius_ );
     OpAsyncConcentration rc( world_, this, rx, ry, eyeRadius_ );
@@ -87,14 +86,12 @@ void LivingCreature::pushBrainInputs()
     brain_->push( NNI_R_GRAS,       std::min( rc.grassConcentration     / 1000.0, NeuralNetwork::BiasMax ) );
 
     brain_->push( NNI_HEALTH,       std::min( health_ / 1000.0, NeuralNetwork::BiasMax ) );
-    brain_->push( NNI_EYE_ANGLE,    eyeAngle_  / MAX_EYE_ANGLE );
     brain_->push( NNI_EYE_RADIUS,   eyeRadius_ / MAX_EYE_RADIUS );
 
     // Feedback of neural outputs
     brain_->push( NNI_FB_DISP,         brain_->pop( NNO_DISP ) );
     brain_->push( NNI_FB_ROTA,         brain_->pop( NNO_ROTA ) );
     brain_->push( NNI_FB_EYE_RADIUS,   brain_->pop( NNO_EYE_RADIUS ) );
-    brain_->push( NNI_FB_FOCUS,        brain_->pop( NNO_FOCUS ) );
     brain_->push( NNI_FB_BODY_RADIUS,  brain_->pop( NNO_BODY_RADIUS ) );
 }
 
@@ -144,16 +141,6 @@ double LivingCreature::popBrainOutputs()
         // Limit eye radius
         eyeRadius_ = std::min( eyeRadius_, MAX_EYE_RADIUS );
         eyeRadius_ = std::max( eyeRadius_, MIN_EYE_RADIUS );
-    }
-
-    // Process eye angle
-    {
-        double value = brain_->pop( NNO_FOCUS );
-        eyeAngle_ += value * 10;
-
-        // Limit eye angle
-        eyeAngle_ = std::min( eyeAngle_, MAX_EYE_ANGLE );
-        eyeAngle_ = std::max( eyeAngle_, MIN_EYE_ANGLE );
     }
 
     // Process body radius

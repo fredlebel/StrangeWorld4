@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\StrangeWorld\CollisionDetection.cpp" />
+    <ClCompile Include="..\StrangeWorld\FastRand.cpp" />
+    <ClCompile Include="..\StrangeWorld\MathAccel.cpp" />
+    <ClCompile Include="..\StrangeWorld\World.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="..\StrangeWorld\Creatures\Carnivore.cpp">
+      <Filter>Source\StrangeWorld\Creatures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\StrangeWorld\Creatures\Creature.cpp">
+      <Filter>Source\StrangeWorld\Creatures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\StrangeWorld\Creatures\Grass.cpp">
+      <Filter>Source\StrangeWorld\Creatures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\StrangeWorld\Creatures\Herbivore.cpp">
+      <Filter>Source\StrangeWorld\Creatures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\StrangeWorld\Creatures\LivingCreature.cpp">
+      <Filter>Source\StrangeWorld\Creatures</Filter>
+    </ClCompile>
+    <ClCompile Include="WinThread.cpp">
+      <Filter>Source\StrangeWorld_Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="StrangeWindowsView.cpp">
+      <Filter>Source\StrangeWorld_Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\StrangeWorld\Operations\Operation.cpp">
+      <Filter>Source\StrangeWorld\Operations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\StrangeWorld\Operations\OpRender.cpp">
+      <Filter>Source\StrangeWorld\Operations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\StrangeWorld\Operations\OpTick.cpp">
+      <Filter>Source\StrangeWorld\Operations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\StrangeWorld\Operations\OpAsyncConcentration.cpp">
+      <Filter>Source\StrangeWorld\Operations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\StrangeWorld\NeuralNetwork\NeuralNetwork.cpp">
+      <Filter>Source\StrangeWorld\NeuralNetwork</Filter>
+    </ClCompile>
+    <ClCompile Include="..\StrangeWorld\NeuralNetwork\NNGene.cpp">
+      <Filter>Source\StrangeWorld\NeuralNetwork</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\StrangeWorld\CollisionDetection.h" />
+    <ClInclude Include="..\StrangeWorld\FastRand.h" />
+    <ClInclude Include="..\StrangeWorld\IThread.h" />
+    <ClInclude Include="..\StrangeWorld\MathAccel.h" />
+    <ClInclude Include="..\StrangeWorld\StrangeView.h" />
+    <ClInclude Include="..\strangeworld\World.h" />
+    <ClInclude Include="..\StrangeWorld\WorldSettings.h" />
+    <ClInclude Include="..\StrangeWorld\Creatures\Carnivore.h">
+      <Filter>Source\StrangeWorld\Creatures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StrangeWorld\Creatures\Creature.h">
+      <Filter>Source\StrangeWorld\Creatures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StrangeWorld\Creatures\Grass.h">
+      <Filter>Source\StrangeWorld\Creatures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StrangeWorld\Creatures\Herbivore.h">
+      <Filter>Source\StrangeWorld\Creatures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StrangeWorld\Creatures\LivingCreature.h">
+      <Filter>Source\StrangeWorld\Creatures</Filter>
+    </ClInclude>
+    <ClInclude Include="WinThread.h">
+      <Filter>Source\StrangeWorld_Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="StrangeWindowsView.h">
+      <Filter>Source\StrangeWorld_Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StrangeWorld\Operations\Operation.h">
+      <Filter>Source\StrangeWorld\Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StrangeWorld\Operations\OpRender.h">
+      <Filter>Source\StrangeWorld\Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StrangeWorld\Operations\OpTick.h">
+      <Filter>Source\StrangeWorld\Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StrangeWorld\Operations\OpAsyncConcentration.h">
+      <Filter>Source\StrangeWorld\Operations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StrangeWorld\NeuralNetwork\NeuralNetwork.h">
+      <Filter>Source\StrangeWorld\NeuralNetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StrangeWorld\NeuralNetwork\NNGene.h">
+      <Filter>Source\StrangeWorld\NeuralNetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Source\StrangeWorld_Windows</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{6f794c22-b2e7-460e-92e5-802b1921f3ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\StrangeWorld">
+      <UniqueIdentifier>{ce4bd2fd-d8cc-4adb-8ecc-4ac32529be68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\StrangeWorld_Windows">
+      <UniqueIdentifier>{4771e9f6-9b90-4436-80e5-355b37d04d4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\StrangeWorld\Creatures">
+      <UniqueIdentifier>{a8eb5e13-c41d-4fbc-aacc-aa91fddffbff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\StrangeWorld\NeuralNetwork">
+      <UniqueIdentifier>{9f964bb5-e589-453c-b8a0-655c3562a453}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\StrangeWorld\Operations">
+      <UniqueIdentifier>{aefd2eaa-7d4e-447c-9413-d74596cafbae}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="StrangeWorld_Windows.rc">
+      <Filter>Source\StrangeWorld_Windows</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
